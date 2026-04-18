@@ -66,7 +66,7 @@ export default function AppLayout({ children, currentView, onViewChange }) {
         {/* Navigation Section */}
         <ScrollArea className="flex-1 px-4 py-4 scrollbar-none">
           <p className="text-[10px] font-black text-foreground-subtle uppercase tracking-[0.3em] px-6 mb-6 opacity-30 select-none">Consola de Control</p>
-          <nav className="space-y-2">
+          <nav className="space-y-3">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = currentView === item.id;
