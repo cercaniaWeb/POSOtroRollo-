@@ -9,6 +9,7 @@ import SalesHistoryView from './components/pages/SalesHistoryView';
 import UsersView from './components/pages/UsersView';
 import QRView from './components/pages/QRView';
 import SettingsView from './components/pages/SettingsView';
+import CabinsView from './components/pages/CabinsView';
 import { useThemeStore } from './store/useThemeStore';
 
 function App() {
@@ -34,6 +35,8 @@ function App() {
         return <UsersView />;
       case "inventory":
         return <InventoryView />;
+      case "cabins":
+        return <CabinsView />;
       case "sales":
         return <SalesHistoryView />;
       case "qr":

@@ -13,7 +13,8 @@ import {
   ClipboardList,
   ChevronRight,
   Zap,
-  UserCircle
+  UserCircle,
+  Home
 } from "lucide-react";
 import { cn } from "../../components/atoms/Button";
 import Button from "../atoms/Button";
@@ -26,6 +27,7 @@ const navItems = [
   { id: "pos",       label: "Punto de Venta", icon: Utensils },
   { id: "kds",       label: "Cocina (KDS)",   icon: Zap },
   { id: "guests",    label: "Huéspedes",      icon: Users },
+  { id: "cabins",    label: "Cabañas",        icon: Home },
   { id: "users",     label: "Personal",       icon: UserCircle },
   { id: "inventory", label: "Inventario",     icon: Package },
   { id: "sales",     label: "Historial",      icon: History },
