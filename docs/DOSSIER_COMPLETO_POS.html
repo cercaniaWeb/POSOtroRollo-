@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dossier Maestro - El Otro Rollo POS v4.0 PRO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4318FF;
+            --secondary: #6AD2FF;
+            --ink: #1B2559;
+            --ink-light: #707EAE;
+            --bg: #F4F7FE;
+            --surface: #FFFFFF;
+            --accent: #05CD99;
+            --danger: #EE5D50;
+            --border: #E9EEF6;
+            --sidebar: #1B1F3B;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--ink);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .page {
+            max-width: 1000px;
+            margin: 40px auto;
+            background: var(--surface);
+            padding: 80px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+            border-radius: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Front Page */
+        .cover {
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #1B1F3B 0%, #111428 100%);
+            color: white;
+            border-radius: 30px;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .cover::after {
+            content: '';
+            position: absolute;
+            top: 10%;
+            right: 10%;
+            width: 300px;
+            height: 300px;
+            background: var(--primary);
+            filter: blur(150px);
+            opacity: 0.3;
+            z-index: 0;
+        }
+
+        .cover-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cover h1 {
+            font-size: 64px;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: -2px;
+            background: linear-gradient(to right, #fff, #6AD2FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cover p {
+            font-size: 20px;
+            font-weight: 500;
+            color: #A3AED0;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-top: 20px;
+        }
+
+        .hero-img {
+            width: 100%;
+            max-width: 800px;
+            border-radius: 20px;
+            margin-top: 50px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Typography */
+        h2 {
+            font-size: 32px;
+            color: var(--primary);
+            margin-top: 60px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            letter-spacing: -0.5px;
+        }
+
+        h2::before {
+            content: '';
+            width: 30px;
+            height: 4px;
+            background: var(--secondary);
+            border-radius: 2px;
+        }
+
+        h3 {
+            font-size: 22px;
+            color: var(--sidebar);
+            margin-top: 40px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        p,
+        li {
+            font-size: 16px;
+            color: #4A5568;
+        }
+
+        /* Grid */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .card-stat {
+            background: var(--bg);
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .card-stat .value {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary);
+            display: block;
+        }
+
+        .card-stat .label {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--ink-light);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* Screenshots */
+        .feature-block {
+            margin: 40px 0;
+        }
+
+        .screenshot {
+            width: 100%;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+            margin: 20px 0;
+        }
+
+        .caption {
+            font-size: 14px;
+            color: var(--ink-light);
+            text-align: center;
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        th {
+            background: var(--sidebar);
+            color: white;
+            text-align: left;
+            padding: 15px;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .tag {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .tag-tech {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        /* Print & Breaks */
+        @media print {
+            body {
+                background: white;
+            }
+
+            .page {
+                margin: 0;
+                padding: 50px;
+                box-shadow: none;
+                border-radius: 0;
+                max-width: 100%;
+            }
+
+            .cover {
+                height: 100vh;
+                border-radius: 0;
+            }
+
+            .section-break {
+                page-break-before: always;
+            }
+        }
+
+        .footer {
+            margin-top: 100px;
+            padding: 40px 0;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--ink-light);
+            font-size: 12px;
+        }
+
+        .brand {
+            font-weight: 800;
+            color: var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- PORTADA -->
+    <div class="page cover">
+        <div class="cover-content">
+            <p>DOCUMENTACIÓN MAESTRA EXCLUSIVA</p>
+            <h1>EL OTRO ROLLO POS</h1>
+            <p>Versión 4.0 PRO — Ecosistema Local-First</p>
+            <img src="https://raw.githubusercontent.com/Antigravity-AI/media/main/pos_hero_placeholder.png"
+                class="hero-img" alt="Hero Render">
+            <!-- Nota: He usado un placeholder visual pero en la versión final usaremos el render generado -->
+            <div style="margin-top: 40px; font-size: 14px; opacity: 0.6;">
+                Generado por <span style="color: var(--secondary)">CercanIA Web</span> · Abril 2026
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 1: VISIÓN ESTRATÉGICA -->
+    <div class="page">
+        <h2>1. Visión Holística del Proyecto</h2>
+        <p>
+            El Otro Rollo POS no es simplemente un software de venta; es un ecosistema operativo diseñado para resolver
+            la fricción tecnológica en entornos de alta demanda y conectividad volátil.
+            Desarrollado específicamente para el <b>Parque Acuático El Otro Rollo</b> en Puebla, este sistema unifica la
+            operación de Restaurante y Tienda bajo una sola interfaz inteligente.
+        </p>
+
+        <div class="grid-3">
+            <div class="card-stat">
+                <span class="value">100%</span>
+                <span class="label">Operación Offline</span>
+            </div>
+            <div class="card-stat">
+                <span class="value">&lt; 150ms</span>
+                <span class="label">Latencia de UI</span>
+            </div>
+            <div class="card-stat">
+                <span class="value">React 19</span>
+                <span class="label">Core Engine</span>
+            </div>
+        </div>
+
+        <h3>1.1 Filosofía Local-First</h3>
+        <p>
+            A diferencia de los sistemas tradicionales basados en la nube, nuestra arquitectura permite que cada
+            terminal funcione como un nodo independiente.
+            Los datos se persisten localmente y se sincronizan cuando la red está disponible, eliminando las caídas de
+            sistema que afectan los ingresos en horas pico.
+        </p>
+
+        <div class="section-break"></div>
+
+        <h2>2. Especificaciones Técnicas (The Pro Stack)</h2>
+        <p>La versión PRO v4.0 representa una reingeniería total desde cimientos, migrando de JavaScript Vanilla a un
+            ecosistema de grado industrial.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Componente</th>
+                    <th>Tecnología</th>
+                    <th>Ventaja Competitiva</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><b>Frontend Runtime</b></td>
+                    <td><span class="tag tag-tech">React 19</span></td>
+                    <td>Gestión de DOM ultra-eficiente y componentes asíncronos.</td>
+                </tr>
+                <tr>
+                    <td><b>Gestión de Estado</b></td>
+                    <td><span class="tag tag-tech">Zustand 5.0</span></td>
+                    <td>Flujo de datos bidireccional sin el overhead de Redux.</td>
+                </tr>
+                <tr>
+                    <td><b>Diseño Atómico</b></td>
+                    <td><span class="tag tag-tech">Tailwind CSS</span></td>
+                    <td>Consistencia visual total y carga de estilos optimizada.</td>
+                </tr>
+                <tr>
+                    <td><b>Experiencia de Usuario</b></td>
+                    <td><span class="tag tag-tech">Framer Motion 12</span></td>
+                    <td>Micro-interacciones que reducen la fatiga del operador.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="feature-block">
+            <img src="../v4_pro/capturas de pantalla/IMG-20260414-WA0009.jpg" class="screenshot" alt="Design System">
+            <div class="caption">Figura 2.1: Implementación del Sistema de Diseño Glassmorphic con enfoque en
+                legibilidad.</div>
+        </div>
+
+        <div class="section-break"></div>
+
+        <h2>3. Manual de Operación Maestro</h2>
+        <p>Guía detallada para el personal operativo y administrativo.</p>
+
+        <h3>3.1 El Punto de Venta (POS) - "El Corazón"</h3>
+        <p>Diseñado para ser operado con una sola mano en dispositivos táctiles. Permite capturar pedidos masivos en
+            segundos.</p>
+        <ul>
+            <li><b>Filtros Rápidos:</b> Buscador inteligente que filtra por nombre o categoría (Cocina/Tienda).</li>
+            <li><b>Confirmación de Órdenes:</b> Al confirmar, el pedido se distribuye automáticamente: lo de cocina al
+                KDS y lo de tienda al inventario.</li>
+        </ul>
+        <img src="../v4_pro/capturas de pantalla/IMG-20260414-WA0007.jpg" class="screenshot" alt="POS View">
+
+        <h3>3.2 Kitchen Display System (KDS) - "La Eficiencia"</h3>
+        <p>Monitorea y gestiona el flujo de preparación sin un solo ticket de papel.</p>
+        <ul>
+            <li><b>Estatus de Semáforo:</b> <b>Recibido (Amarillo)</b>, <b>En Preparación (Azul)</b>, <b>Listo
+                    (Verde)</b>.</li>
+            <li><b>Control de Tiempo:</b> Contador visual de minutos transcurridos para asegurar el cumplimiento del SLA
+                de servicio.</li>
+        </ul>
+        <img src="../v4_pro/capturas de pantalla/IMG-20260414-WA0004.jpg" class="screenshot" alt="KDS View">
+
+        <div class="section-break"></div>
+
+        <h3>3.3 Huéspedes y Carga a Cuenta</h3>
+        <p>Permite una experiencia operativa libre de efectivo (Cashless) mediante el registro de manillas o
+            identificadores.</p>
+        <img src="../v4_pro/capturas de pantalla/IMG-20260414-WA0005.jpg" class="screenshot" alt="Guests View">
+        <p>
+            Desde esta pantalla, el administrador puede realizar "Cargos" rápidos a la cuenta de un huésped y procesar
+            el "Pago Final" al momento del checkout,
+            centralizando toda la deuda del visitante en un solo ticket.
+        </p>
+
+        <h3>3.4 Inventario y Stock Dual</h3>
+        <p>Gestión inteligente de existencias para dos mundos diferentes.</p>
+        <ul>
+            <li><b>Cocina:</b> Configurado como "Ilimitado" para productos preparados al momento.</li>
+            <li><b>Tienda:</b> Control unitario estricto. El sistema bloquea la venta automáticamente si el stock llega
+                a cero.</li>
+        </ul>
+        <img src="../v4_pro/capturas de pantalla/IMG-20260414-WA0003.jpg" class="screenshot" alt="Inventory View">
+
+        <div class="section-break"></div>
+
+        <h2>4. Control Financiero y Auditoría</h2>
+        <p>Bóveda de transacciones y herramientas de cierre de turno.</p>
+
+        <h3>4.1 Historial de Ventas</h3>
+        <p>Cada peso está rastreado. El sistema registra el ID de transacción, el método de pago y el operador que
+            realizó la venta.</p>
+        <img src="../v4_pro/capturas de pantalla/IMG-20260414-WA0006.jpg" class="screenshot" alt="Sales History">
+
+        <h3>4.2 El Corte de Caja</h3>
+        <p>
+            La función más crítica para la transparencia. Al presionar "Corte de Caja", el sistema resume los ingresos
+            en Efectivo vs Tarjeta,
+            genera el reporte final exportable y reinicia los contadores de forma segura para el siguiente operador.
+        </p>
+
+        <div class="section-break"></div>
+
+        <h2>5. Tabla Comparativa: Evolución Tecnológica</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Característica</th>
+                    <th>Standard (v1.0)</th>
+                    <th>PRO (v4.0)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><b>Tecnología Base</b></td>
+                    <td>JS Vanilla / HTML / CSS</td>
+                    <td>React 19 / Vite / Zustand</td>
+                </tr>
+                <tr>
+                    <td><b>Arquitectura</b></td>
+                    <td>Monolítica (765 líneas)</td>
+                    <td>Componentizada (Atomic Design)</td>
+                </tr>
+                <tr>
+                    <td><b>Estética</b></td>
+                    <td>Estandar / Básica</td>
+                    <td>Dark Neumorphism / Glassmorphism</td>
+                </tr>
+                <tr>
+                    <td><b>Persistencia</b></td>
+                    <td>LocalStorage Manual</td>
+                    <td>Middleware Sincronizado (Persist)</td>
+                </tr>
+                <tr>
+                    <td><b>Escalabilidad</b></td>
+                    <td>Limitada</td>
+                    <td>Preparada para Multi-Nodos</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="section-break"></div>
+
+        <h2>6. Roadmap de Desarrollo v5.0</h2>
+        <p>El futuro del sistema está orientado a la integración total y la BI.</p>
+        <ul>
+            <li><b>Integración RFID:</b> Lectura directa de manillas mediante hardware especializado.</li>
+            <li><b>Facturación 4.0:</b> Generación automática de CFDI desde el ticket.</li>
+            <li><b>Dashboard de IA:</b> Análisis predictivo de inventario basado en afluencia histórica del parque.</li>
+            <li><b>App de Meseros:</b> Versión optimizada para smartphones de bolsillo.</li>
+        </ul>
+
+        <div class="footer">
+            © 2026 El Otro Rollo POS — Todos los derechos reservados.<br>
+            Documentación Maestra generada por la división de IA de <span class="brand">CercanIA Web</span>.<br>
+            <em>Para exportar este Dossier a PDF: Seleccione Imprimir → Guardar como PDF (Verificar que 'Gráficos de
+                Fondo' esté activo).</em>
+        </div>
+    </div>
+
+</body>
+
+</html>

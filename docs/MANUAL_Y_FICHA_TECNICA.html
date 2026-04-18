@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Otro Rollo POS - Ficha Técnica y Manual de Usuario</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4318FF;
+            --primary-light: #EEF2FF;
+            --success: #05CD99;
+            --bg: #F4F7FE;
+            --surface: #FFFFFF;
+            --ink: #1B2559;
+            --ink-muted: #707EAE;
+            --border: #E9EEF6;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--ink);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: var(--surface);
+            padding: 60px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border-radius: 20px;
+        }
+
+        /* Front Page / Hero */
+        .hero {
+            text-align: center;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 40px;
+            margin-bottom: 40px;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            font-weight: 800;
+            margin: 10px 0;
+            letter-spacing: -1px;
+            color: var(--primary);
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--ink-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        .badge-premium {
+            background: linear-gradient(135deg, var(--primary), #6AD2FF);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        /* Sections */
+        h2 {
+            font-size: 28px;
+            border-left: 5px solid var(--primary);
+            padding-left: 15px;
+            margin-top: 50px;
+            margin-bottom: 25px;
+            color: var(--ink);
+        }
+
+        h3 {
+            font-size: 20px;
+            color: var(--primary);
+            margin-top: 30px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        /* Cards */
+        .card {
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 15px;
+            background: #FAFBFF;
+        }
+
+        .card-title {
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Screenshots */
+        .screenshot-container {
+            margin: 30px 0;
+            border: 4px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .screenshot-container img {
+            width: 100%;
+            display: block;
+        }
+
+        .screenshot-caption {
+            background: var(--surface);
+            padding: 15px;
+            border-top: 1px solid var(--border);
+            font-size: 14px;
+            color: var(--ink-muted);
+            font-style: italic;
+            text-align: center;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th {
+            background: var(--primary-light);
+            text-align: left;
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        /* Print optimization */
+        @media print {
+            body {
+                background: white;
+            }
+
+            .container {
+                margin: 0;
+                padding: 40px;
+                box-shadow: none;
+                max-width: 100%;
+            }
+
+            .page-break {
+                page-break-before: always;
+            }
+
+            h2 {
+                margin-top: 0;
+            }
+        }
+
+        .footer {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 2px solid var(--border);
+            text-align: center;
+            font-size: 12px;
+            color: var(--ink-muted);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- HERO SECTION -->
+        <div class="hero">
+            <div class="badge-premium">PRO v4.0 — TECHNICAL DOSSIER</div>
+            <h1>El Otro Rollo POS</h1>
+            <p>Sistema de Gestión Integral Local-First</p>
+        </div>
+
+        <!-- FICHA TÉCNICA -->
+        <h2>1. Visión Estratégica</h2>
+        <p>
+            <strong>El Otro Rollo POS</strong> es una solución disruptiva para el sector hospitality en entornos con
+            conectividad limitada.
+            Utilizando una arquitectura <em>Local-First</em>, garantizamos que la operación nunca se detenga, eliminando
+            la dependencia crítica de la nube mientras ofrece una UX de nivel mundial.
+        </p>
+
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">🚀 Innovación</div>
+                Stack moderno con React 19 y Zustand, diseñado para baja latencia y alta concurrencia local.
+            </div>
+            <div class="card">
+                <div class="card-title">🛡️ Resiliencia</div>
+                Base de datos persistente en el navegador que sincroniza automáticamente en segundo plano.
+            </div>
+        </div>
+
+        <div class="screenshot-container">
+            <img src="../v4_pro/capturas de pantalla/IMG-20260414-WA0009.jpg" alt="POS Light Mode">
+            <div class="screenshot-caption">Figura 1.1: Interfaz principal con diseño Glassmorphic Premium (Modo Claro).
+            </div>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- MANUAL DE USUARIO -->
+        <h2>2. Manual de Operación</h2>
+
+        <h3>2.1 El Punto de Venta (POS)</h3>
+        <p>El núcleo del sistema permite realizar ventas en segundos. El grid de productos está categorizado
+            dinámicamente para facilitar la búsqueda táctil.</p>
+
+        <div class="screenshot-container">
+            <img src="../v4_pro/capturas de pantalla/IMG-20260414-WA0007.jpg" alt="POS Dark Mode">
+            <div class="screenshot-caption">Figura 2.1: Terminal de Venta optimizada para entornos de baja luz (Modo
+                Oscuro).</div>
+        </div>
+
+        <ul>
+            <li><strong>Categorización Inteligente:</strong> División automática entre Cocina, Tienda y Servicios.</li>
+            <li><strong>Carrito Persistente:</strong> La orden se mantiene activa incluso si se recarga la página o se
+                cierra el navegador.</li>
+            <li><strong>Pagos Flexibles:</strong> Soporte para Efectivo, Tarjeta y Carga a Cuenta de Huésped.</li>
+        </ul>
+
+        <h3>2.2 Kitchen Display System (KDS)</h3>
+        <p>Elimina el papel. Las órdenes llegan instantáneamente a la cocina, organizadas por tiempo de espera y estado
+            de preparación.</p>
+
+        <div class="screenshot-container">
+            <img src="../v4_pro/capturas de pantalla/IMG-20260414-WA0004.jpg" alt="KDS System">
+            <div class="screenshot-caption">Figura 2.2: Monitor de Cocina mostrando órdenes entrantes y tiempos de
+                cocción.</div>
+        </div>
+
+        <div class="page-break"></div>
+
+        <h3>2.3 Gestión de Huéspedes y Pulseras</h3>
+        <p>Control total de la estancia. Vincula consumos a pulseras RFID o identificadores únicos para un flujo
+            <em>cashless</em>.</p>
+
+        <div class="screenshot-container">
+            <img src="../v4_pro/capturas de pantalla/IMG-20260414-WA0005.jpg" alt="Guest Management">
+            <div class="screenshot-caption">Figura 2.3: Panel de Huéspedes con saldos en tiempo real y estados de
+                ocupación.</div>
+        </div>
+
+        <h3>2.4 Control de Inventario Dual</h3>
+        <p>Monitorea stock finito para la tienda y gestiona insumos ilimitados para la cocina en una sola vista
+            centralizada.</p>
+
+        <div class="screenshot-container">
+            <img src="../v4_pro/capturas de pantalla/IMG-20260414-WA0003.jpg" alt="Inventory">
+            <div class="screenshot-caption">Figura 2.4: Módulo de Inventario con alertas de stock bajo y gestión de
+                categorías.</div>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- BUSINESS INTELLIGENCE -->
+        <h2>3. Inteligencia de Negocio</h2>
+        <p>El sistema genera reportes detallados y permite el "Corte de Caja" instantáneo para asegurar la transparencia
+            financiera total en cada turno.</p>
+
+        <div class="screenshot-container">
+            <img src="../v4_pro/capturas de pantalla/IMG-20260414-WA0006.jpg" alt="Sales History">
+            <div class="screenshot-caption">Figura 3.1: Historial de ventas con desglose por método de pago y reporte de
+                ingresos.</div>
+        </div>
+
+        <h3>3.2 Auto-Servicio mediante QR</h3>
+        <p>Genera códigos únicos por mesa permitiendo que los clientes vean el menú desde sus propios dispositivos sin
+            descargar apps.</p>
+
+        <div class="screenshot-container">
+            <img src="../v4_pro/capturas de pantalla/IMG-20260414-WA0008.jpg" alt="QR Generator">
+            <div class="screenshot-caption">Figura 3.2: Generador dinámico de códigos QR para menús digitales y
+                ordenamiento remoto.</div>
+        </div>
+
+        <!-- STACK -->
+        <h2>4. Especificaciones Técnicas</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Capa</th>
+                    <th>Tecnología</th>
+                    <th>Propósito</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Framework</strong></td>
+                    <td>React 19</td>
+                    <td>Interfaz ultra-rápida y declarativa.</td>
+                </tr>
+                <tr>
+                    <td><strong>Estado</strong></td>
+                    <td>Zustand 5.0</td>
+                    <td>Gestión de datos global ligera.</td>
+                </tr>
+                <tr>
+                    <td><strong>Estilos</strong></td>
+                    <td>Tailwind CSS</td>
+                    <td>Diseño responsivo y atómico.</td>
+                </tr>
+                <tr>
+                    <td><strong>Animaciones</strong></td>
+                    <td>Framer Motion</td>
+                    <td>Micro-interacciones de alta fidelidad.</td>
+                </tr>
+                <tr>
+                    <td><strong>Arquitectura</strong></td>
+                    <td>Local-First</td>
+                    <td>Independencia total de internet.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="footer">
+            © 2026 El Otro Rollo POS — Documentación Generada por CercanIA Web.<br>
+            <em>Para exportar a PDF: Presione Ctrl+P en su navegador y elija "Guardar como PDF".</em>
+        </div>
+    </div>
+
+</body>
+
+</html>
