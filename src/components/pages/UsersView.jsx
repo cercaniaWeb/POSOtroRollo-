@@ -104,7 +104,7 @@ export default function UsersView() {
               <div>
                 <div className="flex justify-between items-start mb-1">
                   <h3 className="text-xl font-black text-foreground tracking-tight">{u.name}</h3>
-                  <span className="text-[10px] font-black text-foreground-subtle opacity-40 uppercase tracking-widest">ID:{u.id.slice(-4)}</span>
+                  <span className="text-[10px] font-black text-foreground-subtle opacity-40 uppercase tracking-widest">ID:{String(u.id).slice(-4)}</span>
                 </div>
                 <div className={cn(
                   "inline-flex items-center gap-2 px-3 py-1 rounded-full border",

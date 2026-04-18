@@ -122,7 +122,7 @@ export default function KDSView() {
                     <div className="flex justify-between items-start">
                       <div>
                         <div className="flex items-center gap-3">
-                          <span className="text-2xl font-black text-foreground tracking-tighter uppercase">TKT-{order.id.slice(-4)}</span>
+                          <span className="text-2xl font-black text-foreground tracking-tighter uppercase">TKT-{String(order.id).slice(-4)}</span>
                           <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/20">MESA {order.table}</span>
                         </div>
                         <div className="flex items-center gap-2 mt-2 text-foreground-subtle">

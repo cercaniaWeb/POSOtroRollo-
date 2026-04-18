@@ -201,7 +201,7 @@ export default function InventoryView() {
                         </div>
                         <div>
                           <p className="text-[15px] font-black text-foreground group-hover:text-primary transition-colors">{product.name}</p>
-                          <p className="text-[10px] font-black text-foreground-subtle uppercase tracking-widest opacity-60">REF: {product.id.slice(-6)}</p>
+                          <p className="text-[10px] font-black text-foreground-subtle uppercase tracking-widest opacity-60">REF: {String(product.id).slice(-6)}</p>
                         </div>
                       </div>
                     </td>

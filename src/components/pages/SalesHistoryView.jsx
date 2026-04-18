@@ -122,7 +122,7 @@ export default function SalesHistoryView() {
                     </td>
                     <td className="px-6 py-4 text-center">
                       <span className="font-black text-[10px] text-foreground-subtle bg-surface shadow-neu-inset px-3 py-1 rounded-full border border-white/5 uppercase tracking-widest">
-                        #{sale.id.slice(-6)}
+                        #{String(sale.id).slice(-6)}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-center">
