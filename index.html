@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS - El Otro Rollo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+    <!-- Iconos Phosphor -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <!-- Pantalla de Login -->
+    <div id="loginScreen" class="full-screen-overlay">
+        <div class="login-card">
+            <div class="login-logo" style="margin-bottom: 24px;">
+                <img src="logo.png" alt="Otro Rollo Logo" style="max-height: 100px; width: auto; object-fit: contain;">
+            </div>
+            <h2>Bienvenido</h2>
+            <p>Sincronizando con El Otro Rollo</p>
+            <form id="loginForm" class="login-form">
+                <div class="input-group">
+                    <label>Usuario / Email</label>
+                    <input type="text" id="loginUsername" required placeholder="admin o caja">
+                </div>
+                <div class="input-group">
+                    <label>PIN / Password</label>
+                    <input type="password" id="loginPassword" required placeholder="****">
+                </div>
+                <div id="loginError" class="login-error hidden">Credenciales incorrectas</div>
+                <button type="submit" class="checkout-btn">Entrar al Sistema</button>
+            </form>
+        </div>
+        <!-- Decorative Wave -->
+        <div class="wavy-bg">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#00BC6F" fill-opacity="0.1" d="M0,192L48,197.3C96,203,192,213,288,192C384,171,480,117,576,128C672,139,768,213,864,229.3C960,245,1056,203,1152,192C1248,181,1344,203,1392,213.3L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>
+        </div>
+    </div>
+
+    <div class="app-container hidden" id="appMain">
+        <!-- Sidebar Moderna -->
+        <nav class="sidebar">
+            <div class="logo-container">
+                <img src="logo.png" alt="Logo">
+            </div>
+            <div class="nav-items">
+                <button class="nav-item active" title="Ventas"><i class="ph-fill ph-storefront"></i></button>
+                <button class="nav-item" id="navCorteBtn" title="Caja"><i class="ph-fill ph-cash-register"></i></button>
+                <button class="nav-item hidden" id="navAdminBtn" title="Configuración"><i class="ph-fill ph-gear-six"></i></button>
+            </div>
+            <div class="user-profile">
+                <img src="https://ui-avatars.com/api/?name=Cajero&background=00BC6F&color=fff" id="currentUserAvatar" alt="User">
+                <button class="nav-item" id="navLogoutBtn" title="Salir"><i class="ph-bold ph-sign-out"></i></button>
+            </div>
+        </nav>
+
+        <!-- Contenido Dash -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-title">
+                    <h1>El Otro Rollo</h1>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+                        <p><i class="ph ph-map-pin"></i> Punto de Venta Principal</p>
+                        <span style="color: var(--border-color);">|</span>
+                        <div id="connectivityStatus" style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700;">
+                            <i class="ph-fill ph-circle" id="onlineStatusIcon" style="font-size: 8px; color: #10b981;"></i>
+                            <span id="onlineStatusText">Conectado</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="search-bar">
+                    <i class="ph-bold ph-magnifying-glass"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar productos por nombre o código...">
+                </div>
+            </header>
+
+            <div class="filters" id="categoryFilters">
+                <button class="filter-btn active" data-category="all">Todos</button>
+                <button class="filter-btn restaurant" data-category="Restaurante"><i class="ph-fill ph-cooking-pot"></i> Cocina</button>
+                <button class="filter-btn store" data-category="Tienda"><i class="ph-fill ph-shopping-basket"></i> Tienda</button>
+            </div>
+
+            <div class="products-grid" id="productsGrid">
+                <!-- JS Render -->
+            </div>
+        </main>
+
+        <!-- Sidebar Carrito -->
+        <aside class="cart-panel">
+            <div class="cart-header">
+                <h2>Carrito <span>🚀</span></h2>
+                <button class="clear-cart" id="clearCartBtn"><i class="ph-bold ph-trash"></i></button>
+            </div>
+            
+            <div class="cart-items" id="cartItems">
+                <div class="empty-cart-msg">Tu bandeja está lista para recibir productos</div>
+            </div>
+
+            <div class="cart-summary">
+                <div class="summary-line">
+                    <span>Subtotal</span>
+                    <span id="subtotalAmount">$0.00</span>
+                </div>
+                <div style="display: flex; gap: 8px; margin: 12px 0;">
+                    <div style="flex: 1; padding: 12px; border-radius: 12px; background: #fffbeb; color: #b45309; font-size: 11px; font-weight: 800;">
+                        COCINA: <span id="kitchenAmount">$0</span>
+                    </div>
+                    <div style="flex: 1; padding: 12px; border-radius: 12px; background: #f0fdf4; color: #166534; font-size: 11px; font-weight: 800;">
+                        TIENDA: <span id="storeAmount">$0</span>
+                    </div>
+                </div>
+                <div class="summary-line total">
+                    <span>TOTAL</span>
+                    <span id="totalAmount">$0.00</span>
+                </div>
+                
+                <button class="checkout-btn" id="checkoutBtn">
+                    Realizar Cobro <i class="ph-bold ph-arrow-right"></i>
+                </button>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal-overlay hidden" id="paymentModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Finalizar Venta</h3>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <p style="color: var(--text-secondary); font-size: 14px; font-weight: 700;">Total a abonar</p>
+                    <h2 id="modalTotal" style="font-size: 42px; font-weight: 900; color: var(--brand-blue);">$0.00</h2>
+                </div>
+                
+                <div class="payment-methods" style="display:flex; gap:12px; margin-bottom: 24px;">
+                    <button type="button" class="filter-btn active" id="btnEfectivo" style="flex:1; justify-content:center;"><i class="ph-fill ph-money"></i> Efectivo</button>
+                    <button type="button" class="filter-btn" id="btnTarjeta" style="flex:1; justify-content:center;"><i class="ph-fill ph-credit-card"></i> Tarjeta</button>
+                </div>
+                
+                <div class="payment-inputs" id="cashInputGroup">
+                    <label style="font-size:12px; font-weight:800; text-transform:uppercase; color:var(--text-secondary);">Monto Recibido</label>
+                    <div style="display:flex; align-items:center; border:2px solid var(--brand-green); border-radius:15px; padding:15px; margin-top:8px; background:white;">
+                        <span style="font-weight:900; margin-right:8px; color:var(--brand-green);">$</span>
+                        <input type="number" id="cashReceived" style="border:none; outline:none; font-size:24px; font-weight:900; width:100%;" placeholder="0.00">
+                    </div>
+                </div>
+
+                <div class="payment-inputs" style="margin-top: 20px;">
+                    <label style="font-size:12px; font-weight:800; text-transform:uppercase; color:var(--text-secondary);">Propina Extra</label>
+                    <div style="display:flex; align-items:center; border:1px solid #e2e8f0; border-radius:15px; padding:10px; margin-top:8px;">
+                        <span style="font-weight:700; margin-right:8px; color:#94a3b8;">$</span>
+                        <input type="number" id="tipAmount" style="border:none; outline:none; font-size:18px; font-weight:700; width:100%;" placeholder="0.00">
+                    </div>
+                </div>
+
+                <div style="margin-top: 24px; padding: 20px; background: #f8fafc; border-radius: 15px; text-align: center;">
+                    <p style="font-size: 12px; font-weight: 800; color: #64748b;">CAMBIO PARA EL CLIENTE</p>
+                    <h2 id="modalChange" style="font-size: 32px; font-weight: 900; color: #10b981;">$0.00</h2>
+                </div>
+                
+                <button class="checkout-btn" id="confirmPaymentBtn" style="margin-top:24px; background:#10b981;" disabled>
+                    <i class="ph-fill ph-check-circle"></i> Confirmar Pago
+                </button>
+                <button id="closeModalBtn" style="width:100%; border:none; background:transparent; margin-top:12px; font-weight:700; color:#94a3b8; cursor:pointer;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ticket Modal -->
+    <div class="modal-overlay hidden" id="ticketModal">
+        <div class="modal" style="width: 360px;">
+            <div class="modal-body ticket-body" id="ticketBody" style="background: white;">
+                <!-- JS Render -->
+            </div>
+            <div style="padding: 24px; gap:12px; display:flex; flex-direction:column;">
+                <button class="checkout-btn" id="finishTicketBtn">Imprimir Ticket</button>
+                <button id="closeTicketBtn" style="border:none; background:transparent; font-weight:700; color:#94a3b8; cursor:pointer;">Cerrar sin imprimir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Corte Caja Modal -->
+    <div class="modal-overlay hidden" id="corteModal">
+        <div class="modal" style="width: 600px;">
+            <div class="modal-header">
+                <h3>Corte de Turno</h3>
+            </div>
+            <div class="modal-body" id="corteBody">
+                <!-- JS Render -->
+            </div>
+            <div style="padding: 24px; display:flex; gap:12px;">
+                <button class="checkout-btn" id="exportCsvBtn" style="background:#0ea5e9; flex:1;"><i class="ph-fill ph-file-csv"></i> Exportar CSV</button>
+                <button class="checkout-btn" id="closeShiftBtn" style="background:#ef4444; flex:1;"><i class="ph-fill ph-warning"></i> Cerrar Turno</button>
+                <button id="closeCorteBtn" style="border:none; background:transparent; font-weight:700; color:#94a3b8; cursor:pointer;">Regresar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
