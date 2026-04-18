@@ -6,14 +6,14 @@
 
 @layer base {
   :root {
-    /* Sophisticated Light Palette (Softer) */
-    --bg-surface: #F8FAFC;
-    --bg-surface-low: #F1F5F9;
-    --bg-surface-lowest: #E2E8F0;
-    --bg-glass: rgba(255, 255, 255, 0.6);
-    --bg-glass-strong: rgba(255, 255, 255, 0.9);
+    /* Original Light Backgrounds */
+    --bg-surface: #E0E5EC;
+    --bg-surface-low: #D1D9E6;
+    --bg-surface-lowest: #C8D0E0;
+    --bg-glass: rgba(255, 255, 255, 0.4);
+    --bg-glass-strong: rgba(255, 255, 255, 0.7);
 
-    --color-primary: #0F172A;
+    --color-primary: #0F172A; /* Keeping the new Emerald/Slate accent as they liked it */
     --color-primary-foreground: #FFFFFF;
     
     --color-success: #10B981;
@@ -22,43 +22,43 @@
     --color-danger: #F43F5E;
     --color-danger-foreground: #FFFFFF;
 
-    --color-foreground: #1E293B;
+    --color-foreground: #44475A;
     --color-foreground-muted: #64748B;
-    --color-foreground-subtle: #94A3B8;
+    --color-foreground-subtle: #8E9AAF; /* Slightly darker for visibility */
 
-    --shadow-neu: 10px 10px 20px #E2E8F0, -10px -10px 20px #FFFFFF;
-    --shadow-neu-sm: 5px 5px 10px #E2E8F0, -5px -5px 10px #FFFFFF;
-    --shadow-neu-inset: inset 6px 6px 12px #E2E8F0, inset -6px -6px 12px #FFFFFF;
-    --shadow-neu-inset-sm: inset 3px 3px 6px #E2E8F0, inset -3px -3px 6px #FFFFFF;
-    --shadow-neu-glow: 0 0 25px rgba(15, 23, 42, 0.05), 10px 10px 20px #E2E8F0, -10px -10px 20px #FFFFFF;
-    --shadow-neu-glow-success: 0 0 20px rgba(16, 185, 129, 0.15), 10px 10px 20px #E2E8F0, -10px -10px 20px #FFFFFF;
-    --shadow-neu-glow-danger: 0 0 20px rgba(244, 63, 94, 0.15), 10px 10px 20px #E2E8F0, -10px -10px 20px #FFFFFF;
+    --shadow-neu: 12px 12px 24px #A3B1C6, -12px -12px 24px #FFFFFF;
+    --shadow-neu-sm: 6px 6px 12px #A3B1C6, -6px -6px 12px #FFFFFF;
+    --shadow-neu-inset: inset 8px 8px 16px #A3B1C6, inset -8px -8px 16px #FFFFFF;
+    --shadow-neu-inset-sm: inset 4px 4px 8px #A3B1C6, inset -4px -4px 8px #FFFFFF;
+    --shadow-neu-glow: 12px 12px 24px #A3B1C6, -12px -12px 24px #FFFFFF, 0 0 25px rgba(15, 23, 42, 0.1);
+    --shadow-neu-glow-success: 12px 12px 24px #A3B1C6, -12px -12px 24px #FFFFFF, 0 0 20px rgba(16, 185, 129, 0.2);
+    --shadow-neu-glow-danger: 12px 12px 24px #A3B1C6, -12px -12px 24px #FFFFFF, 0 0 20px rgba(244, 63, 94, 0.2);
     
-    --border-divider: #F1F5F9;
-    --glass-blur: blur(14px);
-    --glass-border: 1px solid rgba(255, 255, 255, 0.5);
+    --border-divider: #C8D0E0;
+    --glass-blur: blur(12px);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
-  /* Deep Emerald & Midnight Dark Mode (Softer) */
+  /* Original Dark Backgrounds */
   html.dark {
-    --bg-surface: #0B0F1A;
-    --bg-surface-low: #111827;
-    --bg-surface-lowest: #1F2937;
-    --bg-glass: rgba(17, 24, 39, 0.6);
-    --bg-glass-strong: rgba(17, 24, 39, 0.9);
+    --bg-surface: #1A1C20;
+    --bg-surface-low: #15171A;
+    --bg-surface-lowest: #101216;
+    --bg-glass: rgba(26, 28, 32, 0.4);
+    --bg-glass-strong: rgba(26, 28, 32, 0.8);
 
     --color-primary: #10B981;
-    --color-primary-foreground: #0B0F1A;
+    --color-primary-foreground: #1A1C20;
 
     --color-success: #34D399;
-    --color-success-foreground: #020617;
+    --color-success-foreground: #1A1C20;
 
     --color-danger: #FB7185;
     --color-danger-foreground: #FFFFFF;
 
-    --color-foreground: #F1F5F9;
-    --color-foreground-muted: #94A3B8;
-    --color-foreground-subtle: #475569;
+    --color-foreground: #E5E7EB;
+    --color-foreground-muted: #9CA3AF;
+    --color-foreground-subtle: #71717A;
 
     --shadow-neu: 10px 10px 20px #01040D, -10px -10px 20px #080C1A;
     --shadow-neu-sm: 5px 5px 10px #01040D, -5px -5px 10px #080C1A;

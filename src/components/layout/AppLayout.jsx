@@ -80,7 +80,7 @@ export default function AppLayout({ children, currentView, onViewChange }) {
                     "w-full flex items-center gap-4 px-6 py-4.5 rounded-[22px] text-[13px] font-black transition-all duration-400 relative group active-scale",
                     isActive
                       ? "bg-primary text-primary-foreground shadow-neu-glow-primary translate-x-1"
-                      : "text-foreground-subtle hover:text-foreground hover:bg-white/[0.03] hover:shadow-neu-sm"
+                      : "text-foreground-muted hover:text-foreground hover:bg-white/[0.03] hover:shadow-neu-sm"
                   )}
                 >
                   <div className="relative">
