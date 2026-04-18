@@ -6,7 +6,7 @@ import ScrollArea from "../atoms/ScrollArea";
 import { useKDSStore } from '../../store/useKDSStore';
 import { 
   Clock, CheckCircle2, Flame, BellRing, CheckCheck, 
-  UserCircle, Timer, AlertCircle 
+  UserCircle, Timer, AlertCircle, Zap
 } from "lucide-react";
 
 // ── Componente de Cronómetro Interno ──────────────────────────

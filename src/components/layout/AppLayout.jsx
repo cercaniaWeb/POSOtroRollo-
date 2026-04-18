@@ -31,7 +31,6 @@ const navItems = [
   { id: "sales",     label: "Historial",      icon: History },
   { id: "qr",        label: "Códigos QR",     icon: QrCode },
   { id: "config",    label: "Configuración",  icon: Settings },
-  { id: "design",    label: "Design System",  icon: Palette },
 ];
 
 export default function AppLayout({ children, currentView, onViewChange }) {
