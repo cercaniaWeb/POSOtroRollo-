@@ -1,0 +1,35 @@
+{
+    "version": "1.0.0",
+    "name": "el-otro-rollo-pos-new",
+    "scripts": {
+        "preview": "vite preview",
+        "build": "vite build",
+        "dev": "vite",
+        "proxy": "node proxy.js"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-react": "^4.3.4",
+        "autoprefixer": "^10.4.20",
+        "express": "^5.2.1",
+        "http-proxy-middleware": "^3.0.5",
+        "postcss": "^8.4.49",
+        "tailwindcss": "^3.4.17",
+        "vite": "^6.0.7"
+    },
+    "type": "module",
+    "dependencies": {
+        "@imgly/background-removal": "^1.7.0",
+        "clsx": "^2.1.1",
+        "date-fns": "^4.1.0",
+        "framer-motion": "^12.0.0",
+        "lucide-react": "^0.471.2",
+        "onnxruntime-web": "^1.21.0",
+        "qrcode.react": "^4.2.0",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
+        "recharts": "^3.8.1",
+        "tailwind-merge": "^3.5.0",
+        "zustand": "^5.0.12"
+    },
+    "private": true
+}

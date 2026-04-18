@@ -14,3 +14,15 @@ desktop.ini
 
 # Project specific
 *.log
+_archivo_versiones_anteriores/
+legacy_versions/
+
+# Legacy folders that couldn't be moved
+v1_standard/
+v4_pro/
+stitch/
+docs/
+1.pdf
+correcciones.txt
+links
+src/stitch_*.html

@@ -1,0 +1,140 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light Neumorphism + Glass (Default Light) */
+    --bg-surface: #E0E5EC;
+    --bg-surface-low: #D1D9E6;
+    --bg-surface-lowest: #C8D0E0;
+    --bg-glass: rgba(255, 255, 255, 0.4);
+    --bg-glass-strong: rgba(255, 255, 255, 0.7);
+
+    --color-primary: #6D5DFC;
+    --color-primary-foreground: #FFFFFF;
+    
+    --color-success: #81C784;
+    --color-success-foreground: #FFFFFF;
+    
+    --color-danger: #E57373;
+    --color-danger-foreground: #FFFFFF;
+
+    --color-foreground: #44475A;
+    --color-foreground-muted: #8892A4;
+    --color-foreground-subtle: #B0B9CC;
+
+    --shadow-neu: 12px 12px 24px #A3B1C6, -12px -12px 24px #FFFFFF;
+    --shadow-neu-sm: 6px 6px 12px #A3B1C6, -6px -6px 12px #FFFFFF;
+    --shadow-neu-inset: inset 8px 8px 16px #A3B1C6, inset -8px -8px 16px #FFFFFF;
+    --shadow-neu-inset-sm: inset 4px 4px 8px #A3B1C6, inset -4px -4px 8px #FFFFFF;
+    --shadow-neu-glow: 12px 12px 24px #A3B1C6, -12px -12px 24px #FFFFFF, 0 0 25px rgba(109,93,252,0.4);
+    --shadow-neu-glow-success: 12px 12px 24px #A3B1C6, -12px -12px 24px #FFFFFF, 0 0 20px rgba(129,199,132,0.4);
+    --shadow-neu-glow-danger: 12px 12px 24px #A3B1C6, -12px -12px 24px #FFFFFF, 0 0 20px rgba(229,115,115,0.4);
+    
+    --border-divider: #C8D0E0;
+    --glass-blur: blur(12px);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  /* Dark Neumorphism + Glass */
+  html.dark {
+    --bg-surface: #1A1C20;
+    --bg-surface-low: #15171A;
+    --bg-surface-lowest: #101216;
+    --bg-glass: rgba(26, 28, 32, 0.4);
+    --bg-glass-strong: rgba(26, 28, 32, 0.8);
+
+    --color-primary: #00E5FF;
+    --color-primary-foreground: #1A1C20;
+
+    --color-success: #00E676;
+    --color-success-foreground: #1A1C20;
+
+    --color-danger: #FF5C00;
+    --color-danger-foreground: #FFFFFF;
+
+    --color-foreground: #E5E7EB;
+    --color-foreground-muted: #9CA3AF;
+    --color-foreground-subtle: #4B5563;
+
+    --shadow-neu: 10px 10px 20px #0D0E11, -10px -10px 20px #272A30;
+    --shadow-neu-sm: 5px 5px 10px #0D0E11, -5px -5px 10px #272A30;
+    --shadow-neu-inset: inset 8px 8px 16px #0D0E11, inset -8px -8px 16px #272A30;
+    --shadow-neu-inset-sm: inset 4px 4px 8px #0D0E11, inset -4px -4px 8px #272A30;
+    --shadow-neu-glow: 0 0 25px rgba(0, 229, 255, 0.4), inset 0 0 10px rgba(0, 229, 255, 0.2);
+    --shadow-neu-glow-success: 0 0 25px rgba(0, 230, 118, 0.4), inset 0 0 10px rgba(0, 230, 118, 0.2);
+    --shadow-neu-glow-danger: 0 0 25px rgba(255, 92, 0, 0.4), inset 0 0 10px rgba(255, 92, 0, 0.2);
+    
+    --border-divider: #2A2D33;
+    --glass-blur: blur(16px);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.05);
+    
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--bg-surface);
+    color: var(--color-foreground);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-card {
+    background: var(--bg-glass);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+  }
+
+  .glass-card-strong {
+    background: var(--bg-glass-strong);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+  }
+
+  /* Micro-interactions */
+  .hover-scale {
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .hover-scale:hover {
+    transform: scale(1.02);
+  }
+  .active-scale:active {
+    transform: scale(0.96);
+  }
+
+  /* Typography refinement */
+  h1, h2, h3, h4, .font-black {
+    letter-spacing: -0.02em;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-foreground-subtle);
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-foreground-muted);
+  }
+
+  * {
+    border-color: transparent;
+  }
+
+  ::selection {
+    background: var(--color-primary);
+    color: var(--color-primary-foreground);
+  }
+}
