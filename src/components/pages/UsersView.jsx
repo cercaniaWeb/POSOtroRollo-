@@ -7,6 +7,7 @@ import Input from "../atoms/Input";
 import Modal from "../atoms/Modal";
 import Badge from "../atoms/Badge";
 import { Users, UserPlus, Edit2, Trash2, Key, Shield, UserCircle } from "lucide-react";
+import { cn } from "../../lib/utils";
 
 export default function UsersView() {
   const { users, addUser, updateUser, removeUser } = useUserStore();

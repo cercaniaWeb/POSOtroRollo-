@@ -8,6 +8,7 @@ import {
   Clock, CheckCircle2, Flame, BellRing, CheckCheck, 
   UserCircle, Timer, AlertCircle, Zap
 } from "lucide-react";
+import { cn } from "../../lib/utils";
 
 // ── Componente de Cronómetro Interno ──────────────────────────
 function OrderTimer({ timestamp, status }) {

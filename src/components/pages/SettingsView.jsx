@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../atoms/Card";
 import Button from "../atoms/Button";
 import Input from "../atoms/Input";
 import { Settings, Moon, Sun, Printer, Wifi, UserCircle2, Save, Store, FileText, AlignLeft, AlignCenter } from "lucide-react";
+import { cn } from "../../lib/utils";
 
 export default function SettingsView() {
   const { theme, toggleTheme } = useThemeStore();

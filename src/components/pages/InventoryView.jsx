@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { removeBackground } from "@imgly/background-removal";
 import { exportToCSV } from "../../utils/exportUtils";
+import { cn } from "../../lib/utils";
 
 export default function InventoryView() {
   const { products, addProduct, updateProduct, removeProduct, categories, lowStockThreshold } = useInventoryStore();

@@ -7,6 +7,7 @@ import Input from "../atoms/Input";
 import Button from "../atoms/Button";
 import { Search, Banknote, CreditCard, Clock, CheckCircle2, TrendingUp, CalendarDays, DollarSign, Download } from "lucide-react";
 import { exportToCSV } from "../../utils/exportUtils";
+import { cn } from "../../lib/utils";
 
 export default function SalesHistoryView() {
   const { sales, clearSales } = useSalesStore();
