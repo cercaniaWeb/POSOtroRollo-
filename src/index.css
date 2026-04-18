@@ -6,12 +6,12 @@
 
 @layer base {
   :root {
-    /* Sophisticated Light Palette (Slate & Emerald) */
-    --bg-surface: #F1F5F9;
-    --bg-surface-low: #E2E8F0;
-    --bg-surface-lowest: #CBD5E1;
-    --bg-glass: rgba(255, 255, 255, 0.5);
-    --bg-glass-strong: rgba(255, 255, 255, 0.8);
+    /* Sophisticated Light Palette (Softer) */
+    --bg-surface: #F8FAFC;
+    --bg-surface-low: #F1F5F9;
+    --bg-surface-lowest: #E2E8F0;
+    --bg-glass: rgba(255, 255, 255, 0.6);
+    --bg-glass-strong: rgba(255, 255, 255, 0.9);
 
     --color-primary: #0F172A;
     --color-primary-foreground: #FFFFFF;
@@ -26,29 +26,29 @@
     --color-foreground-muted: #64748B;
     --color-foreground-subtle: #94A3B8;
 
-    --shadow-neu: 12px 12px 24px #D1D9E6, -12px -12px 24px #FFFFFF;
-    --shadow-neu-sm: 6px 6px 12px #D1D9E6, -6px -6px 12px #FFFFFF;
-    --shadow-neu-inset: inset 8px 8px 16px #D1D9E6, inset -8px -8px 16px #FFFFFF;
-    --shadow-neu-inset-sm: inset 4px 4px 8px #D1D9E6, inset -4px -4px 8px #FFFFFF;
-    --shadow-neu-glow: 0 0 25px rgba(15, 23, 42, 0.1), 12px 12px 24px #D1D9E6, -12px -12px 24px #FFFFFF;
-    --shadow-neu-glow-success: 0 0 20px rgba(16, 185, 129, 0.25), 12px 12px 24px #D1D9E6, -12px -12px 24px #FFFFFF;
-    --shadow-neu-glow-danger: 0 0 20px rgba(244, 63, 94, 0.25), 12px 12px 24px #D1D9E6, -12px -12px 24px #FFFFFF;
+    --shadow-neu: 10px 10px 20px #E2E8F0, -10px -10px 20px #FFFFFF;
+    --shadow-neu-sm: 5px 5px 10px #E2E8F0, -5px -5px 10px #FFFFFF;
+    --shadow-neu-inset: inset 6px 6px 12px #E2E8F0, inset -6px -6px 12px #FFFFFF;
+    --shadow-neu-inset-sm: inset 3px 3px 6px #E2E8F0, inset -3px -3px 6px #FFFFFF;
+    --shadow-neu-glow: 0 0 25px rgba(15, 23, 42, 0.05), 10px 10px 20px #E2E8F0, -10px -10px 20px #FFFFFF;
+    --shadow-neu-glow-success: 0 0 20px rgba(16, 185, 129, 0.15), 10px 10px 20px #E2E8F0, -10px -10px 20px #FFFFFF;
+    --shadow-neu-glow-danger: 0 0 20px rgba(244, 63, 94, 0.15), 10px 10px 20px #E2E8F0, -10px -10px 20px #FFFFFF;
     
-    --border-divider: #E2E8F0;
+    --border-divider: #F1F5F9;
     --glass-blur: blur(14px);
-    --glass-border: 1px solid rgba(255, 255, 255, 0.4);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.5);
   }
 
-  /* Deep Emerald & Midnight Dark Mode */
+  /* Deep Emerald & Midnight Dark Mode (Softer) */
   html.dark {
-    --bg-surface: #020617;
-    --bg-surface-low: #0F172A;
-    --bg-surface-lowest: #1E293B;
-    --bg-glass: rgba(15, 23, 42, 0.6);
-    --bg-glass-strong: rgba(15, 23, 42, 0.9);
+    --bg-surface: #0B0F1A;
+    --bg-surface-low: #111827;
+    --bg-surface-lowest: #1F2937;
+    --bg-glass: rgba(17, 24, 39, 0.6);
+    --bg-glass-strong: rgba(17, 24, 39, 0.9);
 
     --color-primary: #10B981;
-    --color-primary-foreground: #020617;
+    --color-primary-foreground: #0B0F1A;
 
     --color-success: #34D399;
     --color-success-foreground: #020617;
