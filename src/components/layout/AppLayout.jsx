@@ -14,7 +14,8 @@ import {
   ChevronRight,
   Zap,
   UserCircle,
-  Home
+  Home,
+  ShieldCheck
 } from "lucide-react";
 import { cn } from "../../components/atoms/Button";
 import Button from "../atoms/Button";
@@ -26,6 +27,7 @@ const navItems = [
   { id: "dashboard", label: "Panel Principal", icon: LayoutDashboard },
   { id: "pos",       label: "Punto de Venta", icon: Utensils },
   { id: "kds",       label: "Cocina (KDS)",   icon: Zap },
+  { id: "validation", label: "Validar Ticket", icon: ShieldCheck },
   { id: "guests",    label: "Huéspedes",      icon: Users },
   { id: "cabins",    label: "Cabañas",        icon: Home },
   { id: "users",     label: "Personal",       icon: UserCircle },

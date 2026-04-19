@@ -11,6 +11,7 @@ import { useSalesStore } from '../../store/useSalesStore';
 import { useConfigStore } from '../../store/useConfigStore';
 import { useUserStore } from '../../store/useUserStore';
 import { useCabinStore } from '../../store/useCabinStore';
+import { useValidationStore } from '../../store/useValidationStore';
 import { printTicket } from '../../utils/printTicket';
 import { cn } from "../../lib/utils";
 import {
@@ -116,12 +117,23 @@ export default function POSView() {
   }
 
   // Finalizar venta (llamado desde el modal)
-  const handleFinalizeSale = () => {
-    if (!currentUser) {
-      addToast('Por favor selecciona un mesero antes de finalizar', 'error');
-      setIsPaymentModalOpen(false);
-      return;
-    }
+    const { generateValidation } = useValidationStore.getState();
+    const serviceValidations = [];
+
+    // Generar validaciones para servicios
+    cart.forEach(item => {
+      if (item.category === 'Servicios') {
+        // Generar un ticket por cada unidad vendida si es necesario
+        for(let i = 0; i < item.qty; i++) {
+          const v = generateValidation({
+            name: item.name,
+            guestName: selectedMethod === 'room_charge' ? cabins.find(c => c.id === selectedCabinId)?.currentGuest : 'Cliente General',
+            cabinNumber: selectedMethod === 'room_charge' ? cabins.find(c => c.id === selectedCabinId)?.number : 'N/A'
+          });
+          serviceValidations.push(v);
+        }
+      }
+    });
 
     const saleData = {
       cart: [...cart],
@@ -132,7 +144,8 @@ export default function POSView() {
       received: parseFloat(amountReceived) || total,
       change: change,
       date: new Date().toISOString(),
-      waiter: currentUser.name
+      waiter: currentUser.name,
+      validations: serviceValidations
     };
 
     // 1. Enviar a Cocina
@@ -150,7 +163,8 @@ export default function POSView() {
       addCharge(selectedCabinId, {
         concept: `Consumo POS - ${currentUser.name}`,
         total: total,
-        items: cart.map(i => ({ name: i.name, qty: i.qty, price: i.price }))
+        items: cart.map(i => ({ name: i.name, qty: i.qty, price: i.price })),
+        validations: serviceValidations // También guardamos los tokens en la cabaña
       });
     }
     

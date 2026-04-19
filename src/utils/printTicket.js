@@ -14,29 +14,41 @@ export const printTicket = (saleData, config) => {
     </tr>
   `).join('');
 
+  const serviceValidationsHtml = (saleData.validations || []).map(v => `
+    <div style="margin-top: 20px; border: 1px solid #000; padding: 10px; border-radius: 5px;" class="text-center">
+      <div class="bold">${v.serviceName}</div>
+      <div style="font-size: 10px; margin-bottom: 5px;">Huésped: ${v.guestName}</div>
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${v.id}" style="width: 40mm; height: 40mm; margin: 5px 0;" />
+      <div class="bold" style="font-size: 14px; letter-spacing: 2px;">${v.id}</div>
+      <div style="font-size: 8px; margin-top: 5px;">Válido para un solo uso. Presentar en entrada.</div>
+    </div>
+  `).join('');
+
   const html = `
     <!DOCTYPE html>
     <html>
     <head>
       <title>Ticket - ${businessName}</title>
       <style>
-        @page { size: 80mm 200mm; margin: 0; }
+        @page { size: 80mm auto; margin: 0; }
         body { 
           font-family: 'Courier New', Courier, monospace; 
           width: 80mm; 
-          padding: 10mm; 
+          padding: 5mm; 
           margin: 0; 
           font-size: 12px;
           line-height: 1.2;
+          box-sizing: border-box;
         }
         .text-center { text-align: center; }
         .text-right { text-align: right; }
         .bold { font-weight: bold; }
         .divider { border-top: 1px dashed #000; margin: 10px 0; }
         table { width: 100%; border-collapse: collapse; }
-        .header { margin-bottom: 20px; }
-        .footer { margin-top: 20px; font-size: 10px; }
-        .logo { max-width: 60mm; height: auto; margin: 0 auto 10px; display: block; filter: grayscale(1); }
+        .header { margin-bottom: 15px; }
+        .footer { margin-top: 15px; font-size: 10px; }
+        .logo { max-width: 50mm; height: auto; margin: 0 auto 10px; display: block; filter: grayscale(1); }
+        .underline { text-decoration: underline; }
       </style>
     </head>
     <body>
@@ -51,7 +63,7 @@ export const printTicket = (saleData, config) => {
 
       <div style="margin-bottom: 10px;">
         <div>Fecha: ${new Date(date).toLocaleString()}</div>
-        <div>Método: ${method === 'cash' ? 'EFECTIVO' : 'TARJETA'}</div>
+        <div>Método: ${method === 'cash' ? 'EFECTIVO' : method === 'room_charge' ? 'CARGO HAB' : 'TARJETA'}</div>
       </div>
 
       <div class="divider"></div>
@@ -85,6 +97,8 @@ export const printTicket = (saleData, config) => {
         </div>
         <div class="divider"></div>
       ` : ''}
+
+      ${serviceValidationsHtml}
 
       <div class="footer text-center">
         <p>${ticketFooter}</p>

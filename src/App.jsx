@@ -10,6 +10,7 @@ import UsersView from './components/pages/UsersView';
 import QRView from './components/pages/QRView';
 import SettingsView from './components/pages/SettingsView';
 import CabinsView from './components/pages/CabinsView';
+import ValidationView from './components/pages/ValidationView';
 import { useThemeStore } from './store/useThemeStore';
 
 function App() {
@@ -37,6 +38,8 @@ function App() {
         return <InventoryView />;
       case "cabins":
         return <CabinsView />;
+      case "validation":
+        return <ValidationView />;
       case "sales":
         return <SalesHistoryView />;
       case "qr":
