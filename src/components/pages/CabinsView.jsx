@@ -51,6 +51,7 @@ export default function CabinsView() {
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
   const [editingCabin, setEditingCabin] = useState(null);
   const [viewMode, setViewMode] = useState("grid"); // grid or list
 
@@ -238,12 +239,25 @@ export default function CabinsView() {
                     >
                       <StatusIcon className="w-5 h-5" />
                     </button>
-                    <button 
-                      onClick={() => handleOpenEdit(cabin)}
-                      className="h-12 flex items-center justify-center rounded-2xl bg-surface shadow-neu border border-white/5 text-foreground-subtle hover:text-amber-500 active-scale transition-all"
-                    >
-                      <Edit2 className="w-5 h-5" />
-                    </button>
+                    {cabin.status === 'occupied' ? (
+                      <button 
+                        onClick={() => {
+                          setEditingCabin(cabin);
+                          setIsAccountModalOpen(true);
+                        }}
+                        className="h-12 flex items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-neu-glow-primary active-scale transition-all"
+                        title="Ver Cuenta"
+                      >
+                        <DollarSign className="w-5 h-5" />
+                      </button>
+                    ) : (
+                      <button 
+                        onClick={() => handleOpenEdit(cabin)}
+                        className="h-12 flex items-center justify-center rounded-2xl bg-surface shadow-neu border border-white/5 text-foreground-subtle hover:text-amber-500 active-scale transition-all"
+                      >
+                        <Edit2 className="w-5 h-5" />
+                      </button>
+                    )}
                     <button 
                       onClick={() => handleDelete(cabin.id, cabin.number)}
                       className="h-12 flex items-center justify-center rounded-2xl bg-surface shadow-neu border border-white/5 text-foreground-subtle hover:text-danger active-scale transition-all"
@@ -265,7 +279,7 @@ export default function CabinsView() {
                 <th className="px-8 py-6">Cabaña</th>
                 <th className="px-6 py-6 text-center">Tipo</th>
                 <th className="px-6 py-6 text-center">Estado</th>
-                <th className="px-6 py-6 text-center">Capacidad</th>
+                <th className="px-6 py-6 text-center">Balance</th>
                 <th className="px-6 py-6 text-center">Precio</th>
                 <th className="px-8 py-6 text-right">Acciones</th>
               </tr>
@@ -273,6 +287,8 @@ export default function CabinsView() {
             <tbody className="divide-y divide-white/5">
               {filteredCabins.map(cabin => {
                 const config = statusConfig[cabin.status];
+                const totalCharges = (cabin.charges || []).reduce((acc, curr) => acc + curr.total, 0);
+
                 return (
                   <tr key={cabin.id} className="group hover:bg-white/[0.01] transition-colors">
                     <td className="px-8 py-5">
@@ -282,7 +298,7 @@ export default function CabinsView() {
                         </div>
                         <div>
                           <p className="text-base font-black text-foreground">#{cabin.number}</p>
-                          <p className="text-[9px] font-black text-foreground-subtle uppercase tracking-widest opacity-40">ID: {cabin.id.slice(-4)}</p>
+                          <p className="text-[9px] font-black text-foreground-subtle uppercase tracking-widest opacity-40">{cabin.currentGuest || 'Sin Huésped'}</p>
                         </div>
                       </div>
                     </td>
@@ -301,15 +317,29 @@ export default function CabinsView() {
                       </button>
                     </td>
                     <td className="px-6 py-5 text-center">
-                      <span className="flex items-center justify-center gap-2 font-black text-sm text-foreground">
-                        <Users className="w-3.5 h-3.5 opacity-30" /> {cabin.capacity}
+                      <span className={cn(
+                        "text-sm font-black",
+                        totalCharges > 0 ? "text-primary" : "text-foreground-subtle opacity-30"
+                      )}>
+                        ${totalCharges.toFixed(2)}
                       </span>
                     </td>
                     <td className="px-6 py-5 text-center">
-                      <span className="text-sm font-black text-primary">${cabin.price}</span>
+                      <span className="text-sm font-black text-foreground-muted">${cabin.price}</span>
                     </td>
                     <td className="px-8 py-5 text-right">
                        <div className="flex justify-end gap-3">
+                          {cabin.status === 'occupied' && (
+                            <button 
+                              onClick={() => {
+                                setEditingCabin(cabin);
+                                setIsAccountModalOpen(true);
+                              }}
+                              className="h-10 w-10 flex items-center justify-center rounded-xl shadow-neu bg-primary text-primary-foreground active-scale transition-all border border-white/5"
+                            >
+                              <DollarSign className="w-4 h-4" />
+                            </button>
+                          )}
                           <button onClick={() => handleOpenEdit(cabin)} className="h-10 w-10 flex items-center justify-center rounded-xl shadow-neu bg-surface text-foreground-subtle hover:text-primary active-scale transition-all border border-white/5">
                             <Edit2 className="w-4 h-4" />
                           </button>
@@ -325,6 +355,72 @@ export default function CabinsView() {
           </table>
         </Card>
       )}
+
+      {/* ── Modal de Cuenta ────────────────────────────────────── */}
+      <Modal
+        isOpen={isAccountModalOpen}
+        onClose={() => setIsAccountModalOpen(false)}
+        title={editingCabin ? `Cuenta - Cabaña ${editingCabin.number}` : "Cuenta"}
+        className="max-w-2xl rounded-[40px]"
+      >
+        <div className="p-4 space-y-8">
+           <div className="bg-surface shadow-neu-inset rounded-[32px] p-8 flex flex-col items-center border border-white/5">
+              <p className="text-[10px] font-black text-foreground-subtle uppercase tracking-[0.2em] mb-2 opacity-60">Total Acumulado</p>
+              <p className="text-5xl font-black text-primary tracking-tight">
+                ${(editingCabin?.charges || []).reduce((acc, curr) => acc + curr.total, 0).toFixed(2)}
+              </p>
+              <p className="text-xs font-black text-foreground-muted mt-2 uppercase tracking-widest opacity-40">Huésped: {editingCabin?.currentGuest}</p>
+           </div>
+
+           <div className="space-y-4">
+              <h4 className="text-[10px] font-black text-foreground-subtle uppercase tracking-[0.2em] ml-2 opacity-60">Detalle de Cargos</h4>
+              <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 scrollbar-none">
+                {(editingCabin?.charges || []).length === 0 ? (
+                  <div className="py-10 text-center opacity-40 italic text-sm">No hay cargos registrados aún</div>
+                ) : (
+                  editingCabin?.charges.map((charge, idx) => (
+                    <div key={idx} className="bg-surface shadow-neu p-5 rounded-[24px] border border-white/5 flex justify-between items-center group">
+                       <div className="flex items-center gap-4">
+                          <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                             <Utensils className="w-5 h-5" />
+                          </div>
+                          <div>
+                             <p className="text-sm font-black text-foreground">{charge.concept}</p>
+                             <p className="text-[9px] font-bold text-foreground-subtle uppercase tracking-widest opacity-60">
+                                {new Date(charge.date).toLocaleString()}
+                             </p>
+                          </div>
+                       </div>
+                       <p className="text-base font-black text-primary">${charge.total.toFixed(2)}</p>
+                    </div>
+                  ))
+                )}
+              </div>
+           </div>
+
+           <div className="grid grid-cols-2 gap-4">
+              <button 
+                onClick={() => {
+                   if (window.confirm("¿Confirmar Check-out y liquidación de cuenta?")) {
+                      updateCabinStatus(editingCabin.id, 'cleaning');
+                      addToast("Check-out realizado. Cabaña enviada a limpieza.", "success");
+                      setIsAccountModalOpen(false);
+                   }
+                }}
+                className="h-16 bg-success text-success-foreground font-black text-[13px] uppercase tracking-widest shadow-neu-glow-success rounded-[24px] active-scale transition-all flex items-center justify-center gap-3"
+              >
+                <CheckCircle2 className="w-5 h-5" />
+                Liquidar y Check-out
+              </button>
+              <button 
+                onClick={() => setIsAccountModalOpen(false)}
+                className="h-16 bg-surface shadow-neu text-foreground-muted font-black text-[11px] uppercase tracking-widest rounded-[24px] active-scale transition-all border border-white/5"
+              >
+                Cerrar
+              </button>
+           </div>
+        </div>
+      </Modal>
 
       {/* ── Modal ──────────────────────────────────────────────── */}
       <Modal 

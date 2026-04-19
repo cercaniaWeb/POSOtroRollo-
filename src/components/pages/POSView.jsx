@@ -10,12 +10,14 @@ import { useUIStore } from '../../store/useUIStore';
 import { useSalesStore } from '../../store/useSalesStore';
 import { useConfigStore } from '../../store/useConfigStore';
 import { useUserStore } from '../../store/useUserStore';
+import { useCabinStore } from '../../store/useCabinStore';
 import { printTicket } from '../../utils/printTicket';
 import { cn } from "../../lib/utils";
 import {
   Search, Plus, Minus, Trash2, CreditCard, Banknote,
   ClipboardList, Utensils, ShoppingBag, Coffee, Package,
-  Star, Zap, CheckCircle2, AlertCircle, Printer, UserCircle
+  Star, Zap, CheckCircle2, AlertCircle, Printer, UserCircle,
+  Home
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -75,6 +77,7 @@ export default function POSView() {
   const { addOrder } = useKDSStore();
   const { addSale } = useSalesStore();
   const { config } = useConfigStore();
+  const { cabins, addCharge } = useCabinStore();
   const addToast = useUIStore(state => state.addToast);
   
   const [search, setSearch] = useState("");
@@ -86,6 +89,7 @@ export default function POSView() {
   const [amountReceived, setAmountReceived] = useState("");
   const [showSuccessState, setShowSuccessState] = useState(false);
   const [lastSaleData, setLastSaleData] = useState(null);
+  const [selectedCabinId, setSelectedCabinId] = useState("");
 
   const { subtotal, tax, total } = getCalculations();
 
@@ -105,7 +109,8 @@ export default function POSView() {
   const handleStartPayment = (method = 'cash') => {
     if (cart.length === 0) return;
     setSelectedMethod(method);
-    setAmountReceived(method === 'card' ? total.toString() : "");
+    setAmountReceived(method === 'card' || method === 'room_charge' ? total.toString() : "");
+    setSelectedCabinId("");
     setShowSuccessState(false);
     setIsPaymentModalOpen(true);
   }
@@ -139,12 +144,21 @@ export default function POSView() {
        concept: `Venta - ${currentUser.name}`,
        ...saleData
     });
+
+    // 3. Registrar Cargo a Cabaña si aplica
+    if (selectedMethod === 'room_charge' && selectedCabinId) {
+      addCharge(selectedCabinId, {
+        concept: `Consumo POS - ${currentUser.name}`,
+        total: total,
+        items: cart.map(i => ({ name: i.name, qty: i.qty, price: i.price }))
+      });
+    }
     
-    // 3. Preparar para ticket
+    // 4. Preparar para ticket
     setLastSaleData(saleData);
     setShowSuccessState(true);
 
-    // 4. Limpiar carrito (pero mantenemos datos en saleData para el modal)
+    // 5. Limpiar carrito (pero mantenemos datos en saleData para el modal)
     clearCart();
     addToast(`Venta completada por ${currentUser.name}`, 'success');
   }
@@ -155,11 +169,12 @@ export default function POSView() {
     }
   }
 
-  const closePaymentModal = () => {
+   const closePaymentModal = () => {
     setIsPaymentModalOpen(false);
     setShowSuccessState(false);
     setAmountReceived("");
     setLastSaleData(null);
+    setSelectedCabinId("");
   }
 
   const addToCartWithAnimation = (product) => {
@@ -414,6 +429,14 @@ export default function POSView() {
                   <CreditCard className="h-4 w-4 text-primary" />
                   Tarjeta
                 </button>
+                <button 
+                  onClick={() => handleStartPayment('room_charge')}
+                  disabled={cart.length === 0}
+                  className="bg-surface shadow-neu text-foreground p-3 text-[11px] font-black uppercase tracking-widest active-scale transition-all hover-scale rounded-[18px] disabled:opacity-40 border border-white/5 flex items-center justify-center gap-2"
+                >
+                  <Home className="h-4 w-4 text-primary" />
+                  Cargo Hab.
+                </button>
             </div>
           </div>
         </div>
@@ -477,6 +500,36 @@ export default function POSView() {
                     )}
                   </AnimatePresence>
                 </div>
+              ) : selectedMethod === 'room_charge' ? (
+                <div className="space-y-6">
+                   <div className="p-10 flex flex-col items-center justify-center gap-4 text-center bg-surface shadow-neu-inset rounded-[28px] border border-white/5">
+                    <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-primary shadow-neu">
+                      <Home className="w-10 h-10" />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-base font-black text-foreground">Cargo a Habitación</p>
+                      <p className="text-[10px] font-bold text-foreground-subtle uppercase tracking-widest opacity-60">Selecciona la cabaña ocupada</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground-subtle ml-2 opacity-60">Cabañas Ocupadas</label>
+                    <div className="bg-surface shadow-neu-inset rounded-[24px] p-2 border border-white/5">
+                      <select 
+                        value={selectedCabinId}
+                        onChange={(e) => setSelectedCabinId(e.target.value)}
+                        className="w-full bg-transparent p-4 text-sm font-black outline-none cursor-pointer text-foreground"
+                      >
+                        <option value="" disabled>Seleccionar Cabaña...</option>
+                        {cabins.filter(c => c.status === 'occupied').map(c => (
+                          <option key={c.id} value={c.id}>
+                            Cabaña {c.number} - {c.currentGuest}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
               ) : (
                 <div className="p-12 flex flex-col items-center justify-center gap-6 text-center bg-surface shadow-neu-inset rounded-[28px] border border-white/5">
                   <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center text-primary shadow-neu">
@@ -498,9 +551,16 @@ export default function POSView() {
                     "w-full h-18 text-sm font-black uppercase tracking-widest py-5 rounded-[22px] transition-all active-scale shadow-neu-glow",
                     isEnough || selectedMethod === 'card' ? 'bg-success text-success-foreground' : 'bg-surface text-foreground-subtle opacity-50 cursor-not-allowed border border-white/5'
                   )}
-                  onClick={() => (isEnough || selectedMethod === 'card') && handleFinalizeSale()}
+                  onClick={() => {
+                    const canFinalize = 
+                      (selectedMethod === 'cash' && isEnough) || 
+                      (selectedMethod === 'card') || 
+                      (selectedMethod === 'room_charge' && selectedCabinId);
+                    
+                    if (canFinalize) handleFinalizeSale();
+                  }}
                 >
-                  {selectedMethod === 'cash' ? 'Finalizar Venta' : 'Confirmar Cobro'}
+                  {selectedMethod === 'cash' ? 'Finalizar Venta' : selectedMethod === 'room_charge' ? 'Registrar Cargo' : 'Confirmar Cobro'}
                 </button>
                 <button 
                   onClick={closePaymentModal}
