@@ -117,6 +117,13 @@ export default function POSView() {
   }
 
   // Finalizar venta (llamado desde el modal)
+  const handleFinalizeSale = () => {
+    if (!currentUser) {
+      addToast('Por favor selecciona un mesero antes de finalizar', 'error');
+      setIsPaymentModalOpen(false);
+      return;
+    }
+
     const { generateValidation } = useValidationStore.getState();
     const serviceValidations = [];
 
