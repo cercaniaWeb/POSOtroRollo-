@@ -2,6 +2,7 @@ import React from 'react';
 import { useUIStore } from '../../store/useUIStore';
 import { X, CheckCircle, AlertCircle } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { cn } from '../../lib/utils';
 
 const ToastBox = () => {
   const { toasts, removeToast } = useUIStore();
@@ -16,21 +17,26 @@ const ToastBox = () => {
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: 20, scale: 0.95 }}
             transition={{ duration: 0.3, ease: [0.2, 0, 0, 1] }}
-            className="glass-surface bg-white/80 shadow-ambient border border-white/40 rounded-2xl p-4 min-w-[320px] flex items-center justify-between gap-4"
+            className="bg-surface shadow-neu border border-white/10 rounded-[28px] p-6 min-w-[360px] flex items-center justify-between gap-6"
           >
-            <div className="flex items-center gap-3">
-              {toast.variant === 'success' ? (
-                <CheckCircle className="text-emerald-500" size={24} />
-              ) : (
-                <AlertCircle className="text-red-500" size={24} />
-              )}
-              <span className="font-semibold text-sidebar-navy">{toast.message}</span>
+            <div className="flex items-center gap-4">
+              <div className={cn(
+                "h-12 w-12 rounded-2xl flex items-center justify-center shadow-neu-inset",
+                toast.variant === 'success' ? 'bg-success/10' : 'bg-danger/10'
+              )}>
+                {toast.variant === 'success' ? (
+                  <CheckCircle className="text-success" size={24} />
+                ) : (
+                  <AlertCircle className="text-danger" size={24} />
+                )}
+              </div>
+              <span className="font-black text-[13px] text-foreground uppercase tracking-tight">{toast.message}</span>
             </div>
             <button 
               onClick={() => removeToast(toast.id)}
-              className="text-slate-brand hover:text-sidebar-navy transition-colors"
+              className="text-foreground-subtle hover:text-danger transition-colors p-2 active-scale"
             >
-              <X size={18} />
+              <X size={20} />
             </button>
           </motion.div>
         ))}
