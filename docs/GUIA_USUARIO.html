@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Usuario - El Otro Rollo POS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #10B981;
+            --surface: #1A1C20;
+            --surface-low: #15171A;
+            --foreground: #E5E7EB;
+            --foreground-muted: #9CA3AF;
+            --shadow-neu: 10px 10px 20px #01040D, -10px -10px 20px #080C1A;
+            --shadow-neu-inset: inset 8px 8px 16px #01040D, inset -8px -8px 16px #080C1A;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--surface-low);
+            color: var(--foreground);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 40px;
+            background: var(--surface);
+            border-radius: 40px;
+            shadow: var(--shadow-neu);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            font-size: 0.8rem;
+            font-weight: 800;
+            opacity: 0.5;
+        }
+
+        nav {
+            margin: 40px 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        nav a {
+            padding: 15px;
+            background: var(--surface);
+            border-radius: 18px;
+            text-decoration: none;
+            color: var(--foreground);
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-align: center;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.03);
+            box-shadow: var(--shadow-neu);
+        }
+
+        nav a:hover {
+            transform: translateY(-3px);
+            background: var(--primary);
+            color: var(--surface);
+        }
+
+        section {
+            margin-bottom: 80px;
+            background: var(--surface);
+            padding: 40px;
+            border-radius: 40px;
+            box-shadow: var(--shadow-neu);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 25px;
+            display: flex;
+            items-center: center;
+            gap: 15px;
+            color: var(--primary);
+        }
+
+        .screenshot-container {
+            margin: 30px 0;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--shadow-neu-inset);
+            border: 8px solid var(--surface-low);
+        }
+
+        .screenshot-container img {
+            width: 100%;
+            display: block;
+            transition: transform 0.5s;
+        }
+
+        .screenshot-container img:hover {
+            transform: scale(1.02);
+        }
+
+        .description {
+            margin-top: 30px;
+        }
+
+        .description p {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            color: var(--foreground-muted);
+        }
+
+        .features-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .features-list li {
+            background: var(--surface-low);
+            padding: 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid rgba(255,255,255,0.02);
+        }
+
+        .features-list li::before {
+            content: '✓';
+            color: var(--primary);
+            font-weight: 900;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            opacity: 0.4;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+        }
+
+        @media (max-width: 768px) {
+            .features-list {
+                grid-template-columns: 1fr;
+            }
+            h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <p class="subtitle">Manual de Operación Premium</p>
+            <h1>EL OTRO ROLLO POS</h1>
+            <p>Guía completa para la gestión integral de hospitalidad y servicios.</p>
+        </header>
+
+        <nav>
+            <a href="#dashboard">Dashboard</a>
+            <a href="#pos">Punto de Venta</a>
+            <a href="#kds">Cocina (KDS)</a>
+            <a href="#validation">Validación</a>
+            <a href="#guests">Huéspedes</a>
+            <a href="#cabins">Cabañas</a>
+            <a href="#inventory">Inventario</a>
+            <a href="#sales">Historial</a>
+        </nav>
+
+        <!-- DASHBOARD -->
+        <section id="dashboard">
+            <h2>Panel Principal</h2>
+            <div class="description">
+                <p>El centro de control donde se visualiza el estado actual del negocio en tiempo real.</p>
+            </div>
+            <div class="screenshot-container">
+                <img src="screenshots/dashboard.png" alt="Dashboard Overview">
+            </div>
+            <ul class="features-list">
+                <li>Indicadores clave de rendimiento (Ventas, Ocupación).</li>
+                <li>Gráficas de flujo de ingresos diarios.</li>
+                <li>Estado rápido de cabañas disponibles.</li>
+                <li>Resumen de ventas por mesero.</li>
+            </ul>
+        </section>
+
+        <!-- POS -->
+        <section id="pos">
+            <h2>Punto de Venta</h2>
+            <div class="description">
+                <p>Interfaz optimizada para el registro rápido de pedidos y servicios de aventura.</p>
+            </div>
+            <div class="screenshot-container">
+                <img src="screenshots/pos.png" alt="POS Interface">
+            </div>
+            <ul class="features-list">
+                <li>Categorización inteligente de productos (Cocina, Tienda, Servicios).</li>
+                <li>Cargos directos a cabaña o métodos de pago tradicionales.</li>
+                <li>Generación automática de tickets con códigos QR.</li>
+                <li>Buscador predictivo de productos.</li>
+            </ul>
+        </section>
+
+        <!-- KDS -->
+        <section id="kds">
+            <h2>Cocina (KDS)</h2>
+            <div class="description">
+                <p>Sistema de gestión de comandas para optimizar los tiempos de preparación.</p>
+            </div>
+            <div class="screenshot-container">
+                <img src="screenshots/kds.png" alt="KDS System">
+            </div>
+            <ul class="features-list">
+                <li>Visualización de pedidos pendientes por tiempo de espera.</li>
+                <li>Marcado de platos listos con un solo toque.</li>
+                <li>Historial de órdenes completadas.</li>
+                <li>Alertas visuales para órdenes críticas.</li>
+            </ul>
+        </section>
+
+        <!-- VALIDATION -->
+        <section id="validation">
+            <h2>Validación de Servicios</h2>
+            <div class="description">
+                <p>Módulo de seguridad para el control de acceso a atracciones y servicios.</p>
+            </div>
+            <div class="screenshot-container">
+                <img src="screenshots/validation.png" alt="Validation Module">
+            </div>
+            <ul class="features-list">
+                <li>Escaneo de códigos QR impresos en los tickets.</li>
+                <li>Validación instantánea de estatus (Pendiente / Usado).</li>
+                <li>Prevención de doble uso de servicios.</li>
+                <li>Registro detallado de fecha y hora de validación.</li>
+            </ul>
+        </section>
+
+        <!-- GUESTS -->
+        <section id="guests">
+            <h2>Gestión de Huéspedes</h2>
+            <div class="description">
+                <p>Administración centralizada de visitantes y sus cuentas activas.</p>
+            </div>
+            <div class="screenshot-container">
+                <img src="screenshots/guests.png" alt="Guests Management">
+            </div>
+            <ul class="features-list">
+                <li>Check-in rápido de nuevos huéspedes.</li>
+                <li>Vínculo directo con número de cabaña.</li>
+                <li>Visualización de saldo pendiente por pagar.</li>
+                <li>Detalle de consumos realizados durante la estancia.</li>
+            </ul>
+        </section>
+
+        <!-- CABINS -->
+        <section id="cabins">
+            <h2>Control de Cabañas</h2>
+            <div class="description">
+                <p>Vista panorámica de la disponibilidad y estado de las instalaciones.</p>
+            </div>
+            <div class="screenshot-container">
+                <img src="screenshots/cabins.png" alt="Cabins Management">
+            </div>
+            <ul class="features-list">
+                <li>Mapa visual de cabañas (Ocupadas / Disponibles).</li>
+                <li>Gestión de estados de limpieza y mantenimiento.</li>
+                <li>Asignación rápida de cargos por consumo.</li>
+                <li>Historial de ocupantes.</li>
+            </ul>
+        </section>
+
+        <!-- INVENTORY -->
+        <section id="inventory">
+            <h2>Inventario</h2>
+            <div class="description">
+                <p>Control estricto de existencias de productos y servicios.</p>
+            </div>
+            <div class="screenshot-container">
+                <img src="screenshots/inventory.png" alt="Inventory Control">
+            </div>
+            <ul class="features-list">
+                <li>Alertas automáticas de stock bajo.</li>
+                <li>Gestión de precios y categorías.</li>
+                <li>Registro de entradas y salidas de almacén.</li>
+                <li>Soporte para servicios ilimitados.</li>
+            </ul>
+        </section>
+
+        <!-- SALES -->
+        <section id="sales">
+            <h2>Historial y Auditoría</h2>
+            <div class="description">
+                <p>Transparencia total sobre cada transacción realizada en el sistema.</p>
+            </div>
+            <div class="screenshot-container">
+                <img src="screenshots/sales.png" alt="Sales History">
+            </div>
+            <ul class="features-list">
+                <li>Búsqueda de ventas por fecha o mesero.</li>
+                <li>Re-impresión de tickets antiguos.</li>
+                <li>Detalle de métodos de pago utilizados.</li>
+                <li>Exportación de datos para contabilidad.</li>
+            </ul>
+        </section>
+
+        <footer>
+            &copy; 2026 El Otro Rollo Premium POS - Todos los derechos reservados
+        </footer>
+    </div>
+</body>
+</html>
