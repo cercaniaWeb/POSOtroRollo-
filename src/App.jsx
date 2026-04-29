@@ -11,16 +11,31 @@ import QRView from './components/pages/QRView';
 import SettingsView from './components/pages/SettingsView';
 import CabinsView from './components/pages/CabinsView';
 import ValidationView from './components/pages/ValidationView';
+import SuppliersView from './components/pages/SuppliersView';
+import PurchasesView from './components/pages/PurchasesView';
+import LoginView from './components/pages/LoginView';
 import { useThemeStore } from './store/useThemeStore';
+import { useUserStore } from './store/useUserStore';
 
 function App() {
-  const [currentView, setCurrentView] = useState("dashboard");
+  const { currentUser } = useUserStore();
+  const [currentView, setCurrentView] = useState("pos");
   const initTheme = useThemeStore(state => state.initTheme);
 
   useEffect(() => {
-    // Inicializar el tema persistente
     initTheme();
   }, [initTheme]);
+
+  // Redirect to proper view based on role after login
+  useEffect(() => {
+    if (currentUser?.role === 'kitchen') {
+      setCurrentView('kds');
+    } else if (currentUser?.role === 'cashier') {
+      setCurrentView('pos');
+    } else if (currentUser?.role === 'seller') {
+      setCurrentView('pos');
+    }
+  }, [currentUser]);
 
   const renderView = () => {
     switch (currentView) {
@@ -44,6 +59,10 @@ function App() {
         return <SalesHistoryView />;
       case "qr":
         return <QRView />;
+      case "suppliers":
+        return <SuppliersView />;
+      case "purchases":
+        return <PurchasesView />;
       case "config":
         return <SettingsView />;
       default:
@@ -58,6 +77,10 @@ function App() {
         );
     }
   };
+
+  if (!currentUser) {
+    return <LoginView />;
+  }
 
   return (
     <AppLayout currentView={currentView} onViewChange={setCurrentView}>

@@ -14,10 +14,16 @@ export const useSalesStore = create()(
           {
             id: Date.now().toString(),
             date: new Date().toISOString(),
+            status: 'completed', // Add a status field
             ...sale
           },
           ...state.sales
         ]
+      })),
+
+      // Cancelar venta (cambiar estado a cancelled)
+      cancelSale: (id) => set((state) => ({
+        sales: state.sales.map(s => s.id === id ? { ...s, status: 'cancelled' } : s)
       })),
 
       // Reset for Corte de Caja

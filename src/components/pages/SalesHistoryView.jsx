@@ -10,7 +10,7 @@ import { exportToCSV } from "../../utils/exportUtils";
 import { cn } from "../../lib/utils";
 
 export default function SalesHistoryView() {
-  const { sales, clearSales } = useSalesStore();
+  const { sales, clearSales, cancelSale } = useSalesStore();
   const [search, setSearch] = useState("");
 
   const filteredSales = sales.filter(s => 
@@ -18,9 +18,15 @@ export default function SalesHistoryView() {
     s.id.includes(search)
   );
 
-  const totalSalesAmount = sales.reduce((acc, sale) => acc + (sale.amount || sale.total || 0), 0);
-  const cashSales = sales.filter(s => s.method === 'cash').reduce((acc, sale) => acc + (sale.amount || sale.total || 0), 0);
-  const cardSales = sales.filter(s => s.method === 'card').reduce((acc, sale) => acc + (sale.amount || sale.total || 0), 0);
+  const totalSalesAmount = sales.filter(s => s.status !== 'cancelled').reduce((acc, sale) => acc + (sale.amount || sale.total || 0), 0);
+  const cashSales = sales.filter(s => s.status !== 'cancelled' && s.method === 'cash').reduce((acc, sale) => acc + (sale.amount || sale.total || 0), 0);
+  const cardSales = sales.filter(s => s.status !== 'cancelled' && s.method === 'card').reduce((acc, sale) => acc + (sale.amount || sale.total || 0), 0);
+
+  const handleCancelSale = (id) => {
+    if(window.confirm(`¿Estás seguro de cancelar esta venta? La acción quedará registrada en el historial.`)) {
+      cancelSale(id);
+    }
+  };
 
   const handleCorteDeCaja = () => {
     if(window.confirm(`¿Estás seguro de realizar el Corte de Caja? Se reiniciarán las ventas actuales por un total de $${totalSalesAmount.toFixed(2)}`)) {
@@ -102,20 +108,25 @@ export default function SalesHistoryView() {
                 <th className="px-6 py-5 font-black text-center">Fecha y Hora</th>
                 <th className="px-6 py-5 font-black text-center">Método</th>
                 <th className="px-8 py-5 font-black text-right">Total</th>
+                <th className="px-6 py-5 font-black text-center">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {filteredSales.map(sale => {
                 const isCheckout = sale.type === 'checkout';
+                const isCancelled = sale.status === 'cancelled';
                 return (
-                  <tr key={sale.id} className="group hover:bg-white/[0.02] transition-colors">
+                  <tr key={sale.id} className={cn("group hover:bg-white/[0.02] transition-colors", isCancelled && "opacity-50")}>
                     <td className="px-8 py-4">
                       <div className="flex items-center gap-4">
-                        <div className={`w-12 h-12 rounded-[18px] flex items-center justify-center shadow-neu-inset bg-surface ${isCheckout ? 'text-primary' : 'text-success'}`}>
+                        <div className={`w-12 h-12 rounded-[18px] flex items-center justify-center shadow-neu-inset bg-surface ${isCancelled ? 'text-foreground-muted' : isCheckout ? 'text-primary' : 'text-success'}`}>
                           {isCheckout ? <CreditCard className="w-5 h-5" /> : <DollarSign className="w-5 h-5" />}
                         </div>
                         <div>
-                          <p className="text-[15px] font-black text-foreground group-hover:text-primary transition-colors">{sale.concept}</p>
+                          <div className="flex items-center gap-2">
+                            <p className={cn("text-[15px] font-black transition-colors", isCancelled ? "text-foreground-muted line-through" : "text-foreground group-hover:text-primary")}>{sale.concept}</p>
+                            {isCancelled && <Badge variant="danger" className="text-[8px] px-2 py-0.5 uppercase">Cancelada</Badge>}
+                          </div>
                           <p className="text-[10px] font-black text-foreground-subtle uppercase tracking-widest opacity-60">Responsable: {sale.waiter || 'Sistema'}</p>
                         </div>
                       </div>
@@ -134,15 +145,26 @@ export default function SalesHistoryView() {
                     <td className="px-6 py-4 text-center">
                       <span className={cn(
                         "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/5 shadow-neu-inset",
-                        sale.method === 'cash' ? 'text-warning' : 'text-primary'
+                        sale.method === 'cash' ? 'text-warning' : 'text-primary',
+                        isCancelled && "text-foreground-muted border-white/0 shadow-none"
                       )}>
                         {sale.method === 'cash' ? 'Efectivo' : 'Tarjeta'}
                       </span>
                     </td>
                     <td className="px-8 py-4 text-right">
-                      <span className="text-lg font-black text-foreground tracking-tighter">
+                      <span className={cn("text-lg font-black tracking-tighter", isCancelled ? "text-foreground-muted line-through" : "text-foreground")}>
                         +${(sale.amount || sale.total || 0).toFixed(2)}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      {!isCancelled && (
+                        <button
+                          onClick={() => handleCancelSale(sale.id)}
+                          className="text-[10px] font-black text-danger hover:underline uppercase tracking-widest px-3 py-1 bg-danger/10 rounded-full transition-colors opacity-0 group-hover:opacity-100"
+                        >
+                          Cancelar
+                        </button>
+                      )}
                     </td>
                   </tr>
                 );

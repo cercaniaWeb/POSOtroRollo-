@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Badge from "../atoms/Badge";
 import ScrollArea from "../atoms/ScrollArea";
 import Modal from "../atoms/Modal";
@@ -11,8 +11,10 @@ import { useSalesStore } from '../../store/useSalesStore';
 import { useConfigStore } from '../../store/useConfigStore';
 import { useUserStore } from '../../store/useUserStore';
 import { useCabinStore } from '../../store/useCabinStore';
+import { useGuestStore } from '../../store/useGuestStore';
 import { useValidationStore } from '../../store/useValidationStore';
 import { printTicket } from '../../utils/printTicket';
+import { printKitchenTicket } from '../../utils/printKitchenTicket';
 import { cn } from "../../lib/utils";
 import {
   Search, Plus, Minus, Trash2, CreditCard, Banknote,
@@ -42,19 +44,19 @@ function ProductCard({ product, onAdd }) {
   return (
     <button
       onClick={() => onAdd(product)}
-      className="bg-surface shadow-neu rounded-[24px] p-4 flex flex-col items-center gap-2 active-scale group hover-scale w-full border border-white/5 transition-all duration-300"
+      className="bg-surface shadow-neu rounded-[20px] p-3 flex flex-col items-center gap-2 active-scale group hover-scale w-full border border-white/5 transition-all duration-300"
     >
       {/* Imagen / Icono en cavidad */}
-      <div className={`w-full aspect-square rounded-[18px] flex items-center justify-center mb-1 overflow-hidden shadow-neu-inset bg-surface border border-white/10 group-hover:shadow-neu transition-all duration-500`}>
+      <div className={`w-full aspect-[4/3] rounded-[16px] flex items-center justify-center mb-1 overflow-hidden shadow-neu-inset bg-surface border border-white/10 group-hover:shadow-neu transition-all duration-500`}>
         {product.image
-          ? <img src={product.image} alt={product.name} className="w-14 h-14 object-contain group-hover:scale-110 transition-all duration-500" referrerPolicy="no-referrer" />
-          : <Icon className={`w-10 h-10 group-hover:scale-110 transition-all duration-500 ${meta.color}`} strokeWidth={1.5} />
+          ? <img src={product.image} alt={product.name} className="w-12 h-12 object-contain group-hover:scale-110 transition-all duration-500" referrerPolicy="no-referrer" />
+          : <Icon className={`w-8 h-8 group-hover:scale-110 transition-all duration-500 ${meta.color}`} strokeWidth={1.5} />
         }
       </div>
 
       {/* Nombre del producto — fuerte */}
       <div className="w-full">
-        <p className="text-[13px] font-black truncate w-full text-center leading-tight text-foreground px-1">
+        <p className="text-[12px] font-black truncate w-full text-center leading-tight text-foreground px-1">
           {product.name}
         </p>
         <p className="text-[9px] font-black uppercase tracking-[0.1em] text-foreground-subtle text-center mt-0.5 opacity-60">
@@ -63,7 +65,7 @@ function ProductCard({ product, onAdd }) {
       </div>
 
       {/* Precio — lila en cápsula levantada */}
-      <span className="text-primary bg-surface shadow-neu font-black text-[0.85rem] px-5 py-2 rounded-xl mt-1 group-hover:shadow-neu-glow transition-all">
+      <span className="text-primary bg-surface shadow-neu font-black text-[0.8rem] px-4 py-1.5 rounded-lg mt-0.5 group-hover:shadow-neu-glow transition-all">
         ${product.price}
       </span>
     </button>
@@ -74,12 +76,17 @@ function ProductCard({ product, onAdd }) {
 export default function POSView() {
   const { products, categories } = useInventoryStore();
   const { cart, addToCart, removeFromCart, updateQty, getCalculations, clearCart } = usePOSStore();
-  const { users, currentUser, setCurrentUser } = useUserStore();
+  const { users } = useUserStore();
   const { addOrder } = useKDSStore();
   const { addSale } = useSalesStore();
   const { config } = useConfigStore();
   const { cabins, addCharge } = useCabinStore();
+  const { guests, addGuest, addChargeToTab, fetchGuests } = useGuestStore();
   const addToast = useUIStore(state => state.addToast);
+
+  useEffect(() => {
+    fetchGuests();
+  }, [fetchGuests]);
   
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("Todos");
@@ -91,6 +98,9 @@ export default function POSView() {
   const [showSuccessState, setShowSuccessState] = useState(false);
   const [lastSaleData, setLastSaleData] = useState(null);
   const [selectedCabinId, setSelectedCabinId] = useState("");
+  const [selectedGuestId, setSelectedGuestId] = useState("");
+  const [isNewGuestMode, setIsNewGuestMode] = useState(false);
+  const [newGuestName, setNewGuestName] = useState("");
 
   const { subtotal, tax, total } = getCalculations();
 
@@ -107,25 +117,37 @@ export default function POSView() {
   const popular = products.slice(0, 3);
 
   // Iniciar proceso de pago (abre modal)
-  const handleStartPayment = (method = 'cash') => {
-    if (cart.length === 0) return;
+  const handleStartPayment = (method = "") => {
     setSelectedMethod(method);
-    setAmountReceived(method === 'card' || method === 'room_charge' ? total.toString() : "");
+    setAmountReceived(method === 'card' || method === 'room_charge' || method === 'guest_tab' ? total.toString() : "");
     setSelectedCabinId("");
+    setSelectedGuestId("");
+    setIsNewGuestMode(false);
+    setNewGuestName("");
     setShowSuccessState(false);
     setIsPaymentModalOpen(true);
   }
 
   // Finalizar venta (llamado desde el modal)
-  const handleFinalizeSale = () => {
-    if (!currentUser) {
-      addToast('Por favor selecciona un mesero antes de finalizar', 'error');
-      setIsPaymentModalOpen(false);
-      return;
-    }
+  const handleFinalizeSale = async () => {
+    const waiterName = "Caja";
 
     const { generateValidation } = useValidationStore.getState();
     const serviceValidations = [];
+
+    let finalGuestName = 'Cliente General';
+    let finalGuestId = selectedGuestId;
+
+    if (isNewGuestMode && newGuestName) {
+      // Crear nuevo huésped al vuelo
+      const createdGuest = await addGuest({ name: newGuestName });
+      finalGuestName = createdGuest.name;
+      finalGuestId = createdGuest.id;
+    } else if (selectedGuestId) {
+      finalGuestName = guests.find(g => g.id === selectedGuestId)?.name || 'Cliente General';
+    } else if (selectedMethod === 'room_charge' && selectedCabinId) {
+      finalGuestName = cabins.find(c => c.id === selectedCabinId)?.currentGuest || 'Huésped Cabaña';
+    }
 
     // Generar validaciones para servicios
     cart.forEach(item => {
@@ -134,7 +156,7 @@ export default function POSView() {
         for(let i = 0; i < item.qty; i++) {
           const v = generateValidation({
             name: item.name,
-            guestName: selectedMethod === 'room_charge' ? cabins.find(c => c.id === selectedCabinId)?.currentGuest : 'Cliente General',
+            guestName: finalGuestName,
             cabinNumber: selectedMethod === 'room_charge' ? cabins.find(c => c.id === selectedCabinId)?.number : 'N/A'
           });
           serviceValidations.push(v);
@@ -151,28 +173,34 @@ export default function POSView() {
       received: parseFloat(amountReceived) || total,
       change: change,
       date: new Date().toISOString(),
-      waiter: currentUser.name,
-      validations: serviceValidations
+      waiter: waiterName,
+      validations: serviceValidations,
+      clientName: finalGuestName
     };
 
     // 1. Enviar a Cocina
-    addOrder(cart, 'Mesa / Llevar', currentUser.name);
+    addOrder(cart, 'Mesa / Llevar', waiterName);
+    
+    // Imprimir el ticket de cocina automáticamente
+    printKitchenTicket(saleData);
     
     // 2. Registrar Venta
     addSale({
        type: 'order',
-       concept: `Venta - ${currentUser.name}`,
+       concept: `Venta - ${waiterName}`,
        ...saleData
     });
 
-    // 3. Registrar Cargo a Cabaña si aplica
+    // 3. Registrar Cargo a Cabaña o Cuenta de Huésped si aplica
     if (selectedMethod === 'room_charge' && selectedCabinId) {
       addCharge(selectedCabinId, {
-        concept: `Consumo POS - ${currentUser.name}`,
+        concept: `Consumo POS - ${waiterName}`,
         total: total,
         items: cart.map(i => ({ name: i.name, qty: i.qty, price: i.price })),
-        validations: serviceValidations // También guardamos los tokens en la cabaña
+        validations: serviceValidations
       });
+    } else if (selectedMethod === 'guest_tab' && finalGuestId) {
+      await addChargeToTab(finalGuestId, total);
     }
     
     // 4. Preparar para ticket
@@ -181,7 +209,7 @@ export default function POSView() {
 
     // 5. Limpiar carrito (pero mantenemos datos en saleData para el modal)
     clearCart();
-    addToast(`Venta completada por ${currentUser.name}`, 'success');
+    addToast(`Venta completada`, 'success');
   }
 
   const handlePrint = () => {
@@ -196,55 +224,36 @@ export default function POSView() {
     setAmountReceived("");
     setLastSaleData(null);
     setSelectedCabinId("");
+    setSelectedGuestId("");
+    setIsNewGuestMode(false);
+    setNewGuestName("");
   }
 
   const addToCartWithAnimation = (product) => {
     addToCart(product);
-    addToast(`${product.name} agregado`, 'success');
   }
 
   return (
-    <div className="bg-surface grid grid-cols-1 lg:grid-cols-3 gap-6 h-full text-foreground border-none">
+    <div className="bg-surface grid grid-cols-1 lg:grid-cols-3 gap-4 h-full text-foreground border-none">
 
       {/* ── COLUMNA: Productos ─────────────────────────────── */}
-      <div className="lg:col-span-2 flex flex-col gap-5 min-h-0 bg-surface">
+      <div className="lg:col-span-2 flex flex-col gap-3 min-h-0 bg-surface">
 
         {/* Header con Buscador y Selector de Usuario */}
         <div className="flex flex-col xl:flex-row gap-4">
           <div className="relative flex-1 group">
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground-muted group-focus-within:text-primary transition-colors" />
             <input 
-              placeholder="Buscar por nombre o categoría..."
+              placeholder="Buscar..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 text-sm font-bold outline-none ring-primary/20 placeholder:text-foreground-subtle/50 h-16 bg-surface text-foreground shadow-neu-inset rounded-[18px] border border-white/5 focus:ring-4 transition-all"
+              className="w-full pl-10 pr-4 py-3 text-sm font-bold outline-none ring-primary/20 placeholder:text-foreground-subtle/50 h-12 bg-surface text-foreground shadow-neu-inset rounded-[14px] border border-white/5 focus:ring-4 transition-all"
             />
-          </div>
-          <div className="flex items-center gap-3 bg-surface shadow-neu rounded-[18px] px-5 h-16 min-w-[240px] border border-white/5 hover-scale transition-all">
-            <div className="p-2 rounded-xl bg-primary/10">
-              <UserCircle className="w-5 h-5 text-primary" />
-            </div>
-            <div className="flex-1">
-              <p className="text-[9px] font-black text-foreground-subtle uppercase tracking-widest opacity-60">Personal</p>
-              <select 
-                value={currentUser?.id || ''} 
-                onChange={(e) => {
-                  const user = users.find(u => u.id === e.target.value);
-                  setCurrentUser(user);
-                }}
-                className="bg-transparent border-none text-[13px] font-black outline-none w-full cursor-pointer text-foreground -mt-1 p-0"
-              >
-                <option value="" disabled>Seleccionar Mesero</option>
-                {users.map(u => (
-                  <option key={u.id} value={u.id}>{u.name}</option>
-                ))}
-              </select>
-            </div>
           </div>
         </div>
 
         {/* Category filter pills */}
-        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-none pt-2">
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none pt-1">
           {(categories || ["Todos","Cocina","Tienda","Servicios","Productos"]).map(cat => {
             const isActive = cat === activeCategory;
             const meta = getCategoryMeta(cat);
@@ -255,13 +264,13 @@ export default function POSView() {
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
                 className={cn(
-                  "flex items-center gap-2.5 px-6 py-3 whitespace-nowrap transition-all duration-300 flex-shrink-0 font-black text-[11px] uppercase tracking-wider rounded-[18px] border border-white/5 active-scale",
+                  "flex items-center gap-2 px-4 py-2 whitespace-nowrap transition-all duration-300 flex-shrink-0 font-black text-[10px] uppercase tracking-wider rounded-[14px] border border-white/5 active-scale",
                   isActive 
                     ? 'bg-primary text-primary-foreground shadow-neu-glow' 
                     : 'bg-surface text-foreground-muted shadow-neu hover:text-foreground hover-scale'
                 )}
               >
-                {cat !== "Todos" && <Icon size={14} className={isActive ? 'text-primary-foreground' : meta.color} />}
+                {cat !== "Todos" && <Icon size={12} className={isActive ? 'text-primary-foreground' : meta.color} />}
                 {cat}
               </button>
             );
@@ -278,7 +287,7 @@ export default function POSView() {
               <p className="text-sm font-black text-foreground-muted">Sin coincidencias para "{search}"</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 pb-4 pr-1">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 pb-4 pr-1">
               {filteredProducts.map(product => (
                 <ProductCard key={product.id} product={product} onAdd={addToCartWithAnimation} />
               ))}
@@ -290,13 +299,12 @@ export default function POSView() {
       {/* ── COLUMNA: Carrito ───────────────────────────────── */}
       <div className="bg-surface shadow-neu rounded-[32px] flex flex-col h-full overflow-hidden border border-white/5">
         {/* Header */}
-        <div className="bg-surface px-6 py-5 flex items-center justify-between z-10 border-b border-white/5 shadow-sm">
-          <div>
-            <h3 className="text-base font-black text-foreground tracking-tight">Pedido Actual</h3>
-            <p className="text-[10px] font-black text-foreground-muted uppercase tracking-widest opacity-60">Resumen de cuenta</p>
+        <div className="bg-surface px-4 py-3 flex items-center justify-between z-10 border-b border-white/5 shadow-sm">
+          <div className="flex items-baseline gap-2">
+            <h3 className="text-sm font-black text-foreground tracking-tight">Pedido Actual</h3>
           </div>
           <span className={cn(
-            "text-[10px] font-black px-4 py-1.5 rounded-full transition-all duration-300",
+            "text-[9px] font-black px-2.5 py-1 rounded-full transition-all duration-300",
             cart.length > 0 ? 'bg-primary text-primary-foreground shadow-neu-glow scale-110' : 'bg-surface-low text-foreground-subtle shadow-neu-inset opacity-50'
           )}>
             {cart.length} ÍTEMS
@@ -359,32 +367,31 @@ export default function POSView() {
                       layout
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
+                      exit={{ opacity: 0, x: -20 }}
                       key={item.id} 
-                      className="bg-surface shadow-neu flex gap-3 items-center p-3 rounded-[24px] border border-white/5"
+                      className="bg-surface shadow-neu rounded-[20px] p-3 flex items-center gap-3 border border-white/5 group hover:bg-white/[0.02] transition-colors"
                     >
-                      {/* Thumbnail */}
-                      <div className="h-14 w-14 rounded-[18px] flex items-center justify-center flex-shrink-0 bg-surface shadow-neu-inset-sm overflow-hidden border border-white/5">
-                        {item.image ? (
-                          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <Icon className={`h-7 w-7 ${meta.color}`} />
-                        )}
+                      {/* Thumbnail cavity */}
+                      <div className="h-12 w-12 rounded-[14px] bg-surface shadow-neu-inset flex items-center justify-center border border-white/5 shrink-0 overflow-hidden">
+                        {item.image 
+                          ? <img src={item.image} className="w-full h-full object-cover" />
+                          : <Utensils className="h-6 w-6 text-primary/40" />
+                        }
                       </div>
 
                       {/* Info */}
                       <div className="flex-1 min-w-0">
-                        <p className="text-[13px] font-black truncate text-foreground leading-tight">{item.name}</p>
-                        <p className="text-[11px] font-black text-primary mt-0.5">${item.price}/u</p>
+                        <p className="text-[12px] font-black truncate text-foreground leading-tight">{item.name}</p>
+                        <p className="text-[11px] font-black text-primary mt-0.5">${item.price}</p>
                       </div>
 
                       {/* Qty stepper */}
-                      <div className="shadow-neu-inset-sm bg-surface flex items-center rounded-xl overflow-hidden border border-white/5">
-                        <button onClick={() => updateQty(item.id, -1)} className="px-2.5 py-2 hover:text-danger transition-colors text-foreground-muted bg-transparent active-scale">
+                      <div className="shadow-neu-inset-sm bg-surface flex items-center rounded-xl overflow-hidden border border-white/5 scale-95">
+                        <button onClick={() => updateQty(item.id, -1)} className="px-2.5 py-1.5 hover:text-danger transition-colors text-foreground-muted bg-transparent">
                           <Minus className="h-3 w-3" strokeWidth={3} />
                         </button>
                         <span className="text-[11px] font-black w-5 text-center text-foreground">{item.qty}</span>
-                        <button onClick={() => updateQty(item.id, 1)} className="px-2.5 py-2 hover:text-primary transition-colors text-foreground-muted bg-transparent active-scale">
+                        <button onClick={() => updateQty(item.id, 1)} className="px-2.5 py-1.5 hover:text-primary transition-colors text-foreground-muted bg-transparent">
                           <Plus className="h-3 w-3" strokeWidth={3} />
                         </button>
                       </div>
@@ -392,9 +399,9 @@ export default function POSView() {
                       {/* Remove */}
                       <button
                         onClick={() => removeFromCart(item.id)}
-                        className="bg-surface shadow-neu text-danger p-2.5 rounded-xl hover:shadow-none active-scale transition-all border border-white/5"
+                        className="bg-surface shadow-neu text-danger p-2 rounded-[10px] hover:shadow-none active-scale transition-all border border-white/5"
                       >
-                        <Trash2 className="h-3.5 w-3.5" />
+                        <Trash2 className="h-3 w-3" />
                       </button>
                     </motion.div>
                   );
@@ -405,60 +412,55 @@ export default function POSView() {
         </ScrollArea>
 
         {/* TOTALES + PAGO */}
-        <div className="bg-surface px-6 pt-6 pb-8 border-t border-white/5 space-y-6">
+        <div className="bg-surface px-4 pt-4 pb-4 border-t border-white/5 space-y-4">
 
           {/* Totals section — inset cavity */}
-          <div className="bg-surface shadow-neu-inset rounded-[24px] px-6 py-5 space-y-3 border border-white/5">
+          <div className="bg-surface shadow-neu-inset rounded-[16px] px-4 py-3 space-y-1 border border-white/5">
             <div className="flex justify-between items-center">
-              <span className="text-[11px] font-black text-foreground-subtle uppercase tracking-widest opacity-60">Subtotal</span>
-              <span className="text-sm font-black text-foreground">${subtotal.toFixed(2)}</span>
+              <span className="text-[9px] font-black text-foreground-subtle uppercase tracking-widest opacity-60">Subtotal</span>
+              <span className="text-[11px] font-black text-foreground">${subtotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-[11px] font-black text-foreground-subtle uppercase tracking-widest opacity-60">IVA (16%)</span>
-              <span className="text-sm font-black text-foreground">${tax.toFixed(2)}</span>
+              <span className="text-[9px] font-black text-foreground-subtle uppercase tracking-widest opacity-60">IVA (16%)</span>
+              <span className="text-[11px] font-black text-foreground">${tax.toFixed(2)}</span>
             </div>
             <div className="h-px bg-white/10 w-full my-1"></div>
             <div className="flex justify-between items-center">
-              <span className="text-sm font-black text-foreground">Total</span>
-              <span className="text-2xl font-black text-primary tracking-tighter">${total.toFixed(2)}</span>
+              <span className="text-[11px] font-black text-foreground">Total</span>
+              <span className="text-lg font-black text-primary tracking-tighter">${total.toFixed(2)}</span>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-3">
-             <button
-              onClick={() => handleStartPayment('cash')}
-              disabled={cart.length === 0}
-              className="w-full bg-primary shadow-neu-glow text-primary-foreground py-4 text-[13px] font-black tracking-[0.05em] uppercase active-scale transition-all hover:opacity-90 flex items-center justify-center gap-3 rounded-[20px] disabled:opacity-40"
-            >
-              <Zap className="h-5 w-5 fill-current" />
-              Finalizar Pedido
-            </button>
-            <div className="grid grid-cols-2 gap-3">
+          <div className="flex gap-3">
+            {cart.length === 0 ? (
+              <button 
+                disabled
+                className="w-full h-12 bg-surface shadow-neu-inset text-foreground-subtle py-3.5 rounded-[16px] text-xs font-black uppercase tracking-widest border border-white/5 opacity-50 cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                <ShoppingBag className="w-4 h-4" />
+                Carrito Vacío
+              </button>
+            ) : (
+              <>
                 <button 
-                  onClick={() => handleStartPayment('cash')}
-                  disabled={cart.length === 0}
-                  className="bg-surface shadow-neu text-foreground p-3 text-[11px] font-black uppercase tracking-widest active-scale transition-all hover-scale rounded-[18px] disabled:opacity-40 border border-white/5 flex items-center justify-center gap-2"
+                  onClick={clearCart}
+                  className="px-4 bg-surface shadow-neu text-danger rounded-[16px] active-scale flex items-center justify-center border border-white/5 hover:text-danger-hover transition-colors"
+                  title="Vaciar Carrito"
                 >
-                  <Banknote className="h-4 w-4 text-primary" />
-                  Efectivo
+                  <Trash2 className="w-4 h-4" />
                 </button>
                 <button 
-                  onClick={() => handleStartPayment('card')}
-                  disabled={cart.length === 0}
-                  className="bg-surface shadow-neu text-foreground p-3 text-[11px] font-black uppercase tracking-widest active-scale transition-all hover-scale rounded-[18px] disabled:opacity-40 border border-white/5 flex items-center justify-center gap-2"
+                  className={cn(
+                    "flex-1 h-12 text-[13px] font-black uppercase tracking-widest py-3.5 rounded-[16px] transition-all active-scale shadow-neu-glow flex items-center justify-center gap-2",
+                    "bg-primary text-primary-foreground hover:bg-primary-hover"
+                  )}
+                  onClick={() => setIsPaymentModalOpen(true)}
                 >
-                  <CreditCard className="h-4 w-4 text-primary" />
-                  Tarjeta
+                  <CreditCard className="w-4 h-4" />
+                  Pagar
                 </button>
-                <button 
-                  onClick={() => handleStartPayment('room_charge')}
-                  disabled={cart.length === 0}
-                  className="bg-surface shadow-neu text-foreground p-3 text-[11px] font-black uppercase tracking-widest active-scale transition-all hover-scale rounded-[18px] disabled:opacity-40 border border-white/5 flex items-center justify-center gap-2"
-                >
-                  <Home className="h-4 w-4 text-primary" />
-                  Cargo Hab.
-                </button>
-            </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -477,14 +479,78 @@ export default function POSView() {
               <div className="text-center p-8 bg-surface shadow-neu-inset rounded-[28px] border border-white/5">
                 <p className="text-[10px] font-black text-foreground-subtle uppercase tracking-[0.2em] mb-2 opacity-60">Total a Pagar</p>
                 <p className="text-5xl font-black text-primary tracking-tight">${total.toFixed(2)}</p>
-                <div className="flex items-center justify-center gap-2 mt-4">
-                  {selectedMethod === 'cash' ? (
-                    <Badge variant="warning" className="px-4 py-1.5 rounded-full font-black text-[10px] uppercase">Efectivo</Badge>
-                  ) : (
-                    <Badge variant="primary" className="px-4 py-1.5 rounded-full font-black text-[10px] uppercase">Tarjeta</Badge>
-                  )}
-                </div>
+                {selectedMethod && (
+                  <div className="flex items-center justify-center gap-2 mt-4">
+                    {selectedMethod === 'cash' ? (
+                      <Badge variant="warning" className="px-4 py-1.5 rounded-full font-black text-[10px] uppercase">Efectivo</Badge>
+                    ) : selectedMethod === 'card' ? (
+                      <Badge variant="primary" className="px-4 py-1.5 rounded-full font-black text-[10px] uppercase">Tarjeta</Badge>
+                    ) : (
+                      <Badge variant="success" className="px-4 py-1.5 rounded-full font-black text-[10px] uppercase">Cargo a Cuenta</Badge>
+                    )}
+                  </div>
+                )}
               </div>
+
+              {!selectedMethod ? (
+                <div className="space-y-6">
+                  <p className="text-[10px] font-black text-foreground-subtle uppercase tracking-[0.2em] text-center opacity-60">Selecciona Método de Pago</p>
+                  <div className="grid grid-cols-1 gap-4">
+                    <button 
+                      onClick={() => setSelectedMethod('cash')}
+                      className="bg-surface shadow-neu p-6 rounded-[24px] border border-white/5 flex items-center justify-between group hover:bg-primary/5 transition-all active-scale"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="p-3 rounded-2xl bg-warning/10 text-warning">
+                          <Banknote className="w-6 h-6" />
+                        </div>
+                        <span className="text-sm font-black text-foreground uppercase tracking-widest">Efectivo</span>
+                      </div>
+                      <Zap className="w-5 h-5 text-foreground-subtle opacity-30 group-hover:opacity-100" />
+                    </button>
+                    
+                    <button 
+                      onClick={() => setSelectedMethod('card')}
+                      className="bg-surface shadow-neu p-6 rounded-[24px] border border-white/5 flex items-center justify-between group hover:bg-primary/5 transition-all active-scale"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="p-3 rounded-2xl bg-primary/10 text-primary">
+                          <CreditCard className="w-6 h-6" />
+                        </div>
+                        <span className="text-sm font-black text-foreground uppercase tracking-widest">Tarjeta</span>
+                      </div>
+                      <Zap className="w-5 h-5 text-foreground-subtle opacity-30 group-hover:opacity-100" />
+                    </button>
+
+                    <button 
+                      onClick={() => setSelectedMethod('room_charge')}
+                      className="bg-surface shadow-neu p-6 rounded-[24px] border border-white/5 flex items-center justify-between group hover:bg-primary/5 transition-all active-scale"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="p-3 rounded-2xl bg-success/10 text-success">
+                          <Home className="w-6 h-6" />
+                        </div>
+                        <span className="text-sm font-black text-foreground uppercase tracking-widest">Cargo Habitación</span>
+                      </div>
+                      <Zap className="w-5 h-5 text-foreground-subtle opacity-30 group-hover:opacity-100" />
+                    </button>
+
+                    <button 
+                      onClick={() => setSelectedMethod('guest_tab')}
+                      className="bg-surface shadow-neu p-6 rounded-[24px] border border-white/5 flex items-center justify-between group hover:bg-primary/5 transition-all active-scale"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="p-3 rounded-2xl bg-primary/10 text-primary">
+                          <UserCircle className="w-6 h-6" />
+                        </div>
+                        <span className="text-sm font-black text-foreground uppercase tracking-widest">Cargo a Cliente</span>
+                      </div>
+                      <Zap className="w-5 h-5 text-foreground-subtle opacity-30 group-hover:opacity-100" />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
 
               {/* Input de Efectivo Recibido */}
               {selectedMethod === 'cash' ? (
@@ -521,35 +587,81 @@ export default function POSView() {
                     )}
                   </AnimatePresence>
                 </div>
-              ) : selectedMethod === 'room_charge' ? (
+              ) : selectedMethod === 'room_charge' || selectedMethod === 'guest_tab' ? (
                 <div className="space-y-6">
-                   <div className="p-10 flex flex-col items-center justify-center gap-4 text-center bg-surface shadow-neu-inset rounded-[28px] border border-white/5">
-                    <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-primary shadow-neu">
-                      <Home className="w-10 h-10" />
+                   <div className="p-8 flex flex-col items-center justify-center gap-4 text-center bg-surface shadow-neu-inset rounded-[28px] border border-white/5">
+                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary shadow-neu">
+                      {selectedMethod === 'room_charge' ? <Home className="w-8 h-8" /> : <UserCircle className="w-8 h-8" />}
                     </div>
                     <div className="space-y-1">
-                      <p className="text-base font-black text-foreground">Cargo a Habitación</p>
-                      <p className="text-[10px] font-bold text-foreground-subtle uppercase tracking-widest opacity-60">Selecciona la cabaña ocupada</p>
+                      <p className="text-base font-black text-foreground">{selectedMethod === 'room_charge' ? 'Cargo a Habitación' : 'Cargo a Cuenta'}</p>
+                      <p className="text-[10px] font-bold text-foreground-subtle uppercase tracking-widest opacity-60">
+                        {selectedMethod === 'room_charge' ? 'Selecciona la cabaña ocupada' : 'Identifica al titular de la cuenta'}
+                      </p>
                     </div>
                   </div>
 
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground-subtle ml-2 opacity-60">Cabañas Ocupadas</label>
-                    <div className="bg-surface shadow-neu-inset rounded-[24px] p-2 border border-white/5">
-                      <select 
-                        value={selectedCabinId}
-                        onChange={(e) => setSelectedCabinId(e.target.value)}
-                        className="w-full bg-transparent p-4 text-sm font-black outline-none cursor-pointer text-foreground"
-                      >
-                        <option value="" disabled>Seleccionar Cabaña...</option>
-                        {cabins.filter(c => c.status === 'occupied').map(c => (
-                          <option key={c.id} value={c.id}>
-                            Cabaña {c.number} - {c.currentGuest}
-                          </option>
-                        ))}
-                      </select>
+                  {selectedMethod === 'room_charge' ? (
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground-subtle ml-2 opacity-60">Cabañas Ocupadas</label>
+                      <div className="bg-surface shadow-neu-inset rounded-[24px] p-2 border border-white/5">
+                        <select 
+                          value={selectedCabinId}
+                          onChange={(e) => setSelectedCabinId(e.target.value)}
+                          className="w-full bg-transparent p-4 text-sm font-black outline-none cursor-pointer text-foreground"
+                        >
+                          <option value="" disabled>Seleccionar Cabaña...</option>
+                          {cabins.filter(c => c.status === 'occupied').map(c => (
+                            <option key={c.id} value={c.id}>
+                              Cabaña {c.number} - {c.currentGuest}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between px-2">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground-subtle opacity-60">Cliente / Huésped</label>
+                        <button 
+                          onClick={() => {
+                            setIsNewGuestMode(!isNewGuestMode);
+                            setSelectedGuestId("");
+                          }}
+                          className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline"
+                        >
+                          {isNewGuestMode ? 'Seleccionar Existente' : '+ Nuevo Cliente'}
+                        </button>
+                      </div>
+
+                      {isNewGuestMode ? (
+                        <div className="relative group">
+                          <UserCircle className="absolute left-5 top-1/2 -translate-y-1/2 text-primary w-5 h-5" />
+                          <input 
+                            placeholder="Nombre del Cliente..."
+                            value={newGuestName}
+                            onChange={(e) => setNewGuestName(e.target.value)}
+                            className="w-full pl-12 pr-4 py-4 text-sm font-black bg-surface shadow-neu-inset rounded-[20px] outline-none border border-white/5 focus:ring-4 focus:ring-primary/10 transition-all"
+                          />
+                        </div>
+                      ) : (
+                        <div className="bg-surface shadow-neu-inset rounded-[24px] p-2 border border-white/5">
+                          <select 
+                            value={selectedGuestId}
+                            onChange={(e) => setSelectedGuestId(e.target.value)}
+                            className="w-full bg-transparent p-4 text-sm font-black outline-none cursor-pointer text-foreground"
+                          >
+                            <option value="" disabled>Seleccionar Cliente...</option>
+                            {guests.filter(g => g.status === 'active').map(g => (
+                              <option key={g.id} value={g.id}>
+                                {g.name} ({g.wristband})
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="p-12 flex flex-col items-center justify-center gap-6 text-center bg-surface shadow-neu-inset rounded-[28px] border border-white/5">
@@ -564,24 +676,35 @@ export default function POSView() {
                   </div>
                 </div>
               )}
-
               {/* Footer del Modal (Procesando) */}
               <div className="flex flex-col gap-4">
                 <button 
                   className={cn(
                     "w-full h-18 text-sm font-black uppercase tracking-widest py-5 rounded-[22px] transition-all active-scale shadow-neu-glow",
-                    isEnough || selectedMethod === 'card' ? 'bg-success text-success-foreground' : 'bg-surface text-foreground-subtle opacity-50 cursor-not-allowed border border-white/5'
+                    (selectedMethod === 'cash' && isEnough) || 
+                    (selectedMethod === 'card') || 
+                    (selectedMethod === 'room_charge' && selectedCabinId) ||
+                    (selectedMethod === 'guest_tab' && (selectedGuestId || (isNewGuestMode && newGuestName)))
+                    ? 'bg-success text-success-foreground' 
+                    : 'bg-surface text-foreground-subtle opacity-50 cursor-not-allowed border border-white/5'
                   )}
                   onClick={() => {
                     const canFinalize = 
                       (selectedMethod === 'cash' && isEnough) || 
                       (selectedMethod === 'card') || 
-                      (selectedMethod === 'room_charge' && selectedCabinId);
+                      (selectedMethod === 'room_charge' && selectedCabinId) ||
+                      (selectedMethod === 'guest_tab' && (selectedGuestId || (isNewGuestMode && newGuestName)));
                     
                     if (canFinalize) handleFinalizeSale();
                   }}
                 >
-                  {selectedMethod === 'cash' ? 'Finalizar Venta' : selectedMethod === 'room_charge' ? 'Registrar Cargo' : 'Confirmar Cobro'}
+                  {selectedMethod === 'cash' ? 'Finalizar Venta' : selectedMethod === 'room_charge' || selectedMethod === 'guest_tab' ? 'Registrar Cargo' : 'Confirmar Cobro'}
+                </button>
+                <button 
+                  onClick={() => setSelectedMethod("")}
+                  className="text-[10px] font-black text-primary hover:underline uppercase tracking-widest py-2"
+                >
+                  Cambiar Método de Pago
                 </button>
                 <button 
                   onClick={closePaymentModal}
@@ -592,8 +715,10 @@ export default function POSView() {
                 </button>
               </div>
             </>
-          ) : (
-            <>
+          )}
+        </>
+      ) : (
+          <>
               {/* VISTA DE ÉXITO */}
               <div className="flex flex-col items-center py-10 gap-8">
                 <div className="relative">
